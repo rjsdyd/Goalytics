@@ -1,9 +1,8 @@
-import { Entity, Column, PrimaryColumn } from 'typeorm';
+import { Entity, PrimaryColumn, Column } from 'typeorm';
 
-@Entity('league')
+@Entity('leagues')
 export class League {
-  // PrimaryGeneratedColumn(자동증가) 대신 PrimaryColumn을 사용합니다.
-  @PrimaryColumn() 
+  @PrimaryColumn()
   id: number;
 
   @Column()
@@ -11,4 +10,7 @@ export class League {
 
   @Column()
   country: string;
+
+  @Column({ nullable: true })
+  logo_url: string;
 }

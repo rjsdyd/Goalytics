@@ -1,17 +1,40 @@
-import { Controller, Get } from '@nestjs/common';
-import { FootballService } from './football.service.js'; // .js 필수
+import { Controller, Get, Post, Query } from '@nestjs/common';
+import { FootballService } from './football.service.js';
 
 @Controller('football')
 export class FootballController {
   constructor(private readonly footballService: FootballService) {}
 
-  @Get('save-leagues') // 데이터 갱신 및 저장
-  async saveLeagues() {
+  @Post('leagues/sync')
+  async syncLeagues() {
     return await this.footballService.fetchAndSaveLeagues();
   }
 
-  @Get('leagues') // 저장된 데이터 조회 (새로 추가됨)
+  @Get('leagues')
   async getLeagues() {
     return await this.footballService.getSavedLeagues();
+  }
+
+  @Get('fixtures')
+  async getFixtures() {
+    return await this.footballService.getSavedFixtures();
+  }
+
+  // 브라우저에서 이 주소로 접속하면 5년치 데이터를 긁어옵니다. (시간이 조금 걸릴 수 있습니다)
+  @Get('standings/sync')
+  async syncStandings() {
+    return await this.footballService.fetchAndSaveStandings();
+  }
+
+  // 대시보드 메인 화면용 (최신 2025 시즌 상위 6팀)
+  @Get('standings/latest')
+  async getLatestStandings() {
+    return await this.footballService.getLatestStandings();
+  }
+
+  // 모달 창용 (특정 연도 요청 시 해당 연도 전체 순위 반환, ex: /football/standings/history?season=2024)
+  @Get('standings/history')
+  async getStandingsBySeason(@Query('season') season: number) {
+    return await this.footballService.getStandingsBySeason(Number(season));
   }
 }

@@ -1,14 +1,17 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { HttpModule } from '@nestjs/axios';
-import { TypeOrmModule } from '@nestjs/typeorm'; // TypeORM 추가
-import { FootballService } from './football.service.js';
 import { FootballController } from './football.controller.js';
-import { League } from './entities/league.entity.js'; // 방금 만든 엔티티 가져오기 (.js 필수)
+import { FootballService } from './football.service.js';
+import { League } from './entities/league.entity.js';
+import { Fixture } from './entities/fixture.entity.js';
+import { Standing } from './entities/standing.entity.js'; // 추가
 
 @Module({
+  // TypeOrmModule.forFeature 배열에 Standing을 추가합니다.
   imports: [
+    TypeOrmModule.forFeature([League, Fixture, Standing]),
     HttpModule,
-    TypeOrmModule.forFeature([League]), // 이 모듈에서 League 테이블을 쓰겠다고 선언
   ],
   controllers: [FootballController],
   providers: [FootballService],
