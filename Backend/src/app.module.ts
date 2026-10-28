@@ -1,24 +1,32 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ScheduleModule } from '@nestjs/schedule';
-import { ConfigModule } from '@nestjs/config';
-// 주의: 방금 전 해결하셨던 것처럼 .js 확장자가 필요하다면 './football/football.module.js' 로 유지해주세요.
-import { FootballModule } from './football/football.module.js'; 
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { FootballModule } from './football/football.module.js';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
-    TypeOrmModule.forRoot({
-      type: 'mariadb',
-      host: 'localhost',
-      port: 3310,
-      username: 'root',      
-      password: '1234',      
-      database: 'goalytics',
-      // 👇 에러가 나던 __dirname 코드를 지우고 아래 한 줄로 교체합니다.
-      autoLoadEntities: true, 
-      synchronize: true,
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.env',
     }),
+    
+    // 민감한 기본값(root, 1234 등)을 완전히 제거하고 .env 환경변수만 의존하도록 수정
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        type: 'mariadb',
+        host: configService.get<string>('DB_HOST'),
+        port: Number(configService.get<number>('DB_PORT')),
+        username: configService.get<string>('DB_USERNAME'),
+        password: configService.get<string>('DB_PASSWORD'),
+        database: configService.get<string>('DB_DATABASE'),
+        autoLoadEntities: true,
+        synchronize: true,
+      }),
+    }),
+    
     ScheduleModule.forRoot(),
     FootballModule,
   ],
