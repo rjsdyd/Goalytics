@@ -26,15 +26,24 @@ export class FootballController {
     return await this.footballService.fetchAndSaveStandings();
   }
 
-  // 대시보드 메인 화면용 (최신 2025 시즌 상위 6팀)
+  // 대시보드 메인 화면용 (최신 2024 시즌 상위 6팀 등)
   @Get('standings/latest')
   async getLatestStandings() {
     return await this.footballService.getLatestStandings();
   }
 
-  // 모달 창용 (특정 연도 요청 시 해당 연도 전체 순위 반환, ex: /football/standings/history?season=2024)
+  // 모달 창용 (특정 연도/리그 요청 시 해당 순위 반환)
   @Get('standings/history')
-  async getStandingsBySeason(@Query('season') season: number) {
-    return await this.footballService.getStandingsBySeason(Number(season));
+  async getHistoryStandings(
+    @Query('season') season: number,
+    @Query('league') leagueId: number,
+  ) {
+    return this.footballService.getHistoryStandings(Number(season), Number(leagueId));
+  }
+
+  @Get('news')
+  async getNews() {
+    return await this.footballService.getLatestNews();
   }
 }
+

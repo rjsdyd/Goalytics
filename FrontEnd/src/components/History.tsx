@@ -10,17 +10,27 @@ interface StandingData {
   form: string;
 }
 
+const LEAGUES = [
+  { id: 39, name: 'Premier League' },
+  { id: 140, name: 'La Liga' },
+  { id: 135, name: 'Serie A' },
+  { id: 78, name: 'Bundesliga' },
+  { id: 61, name: 'Ligue 1' },
+];
+
 export default function Standings() {
   const [latestStandings, setLatestStandings] = useState<StandingData[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   
-  // 모달 상태 관리 (기본 선택 연도를 2024로 설정)
+  // 모달 상태 관리 (기본 선택 리그 PL, 연도 2024로 설정)
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [selectedLeague, setSelectedLeague] = useState(LEAGUES[0]);
   const [selectedSeason, setSelectedSeason] = useState<number>(2024);
   const [historyStandings, setHistoryStandings] = useState<StandingData[]>([]);
   const [historyLoading, setHistoryLoading] = useState<boolean>(false);
 
-  const seasons = [2025, 2024, 2023, 2022, 2021];
+  // 요청하신 대로 21, 25 시즌을 삭제하고 24, 23, 22만 남겼습니다.
+  const seasons = [2024, 2023, 2022];
 
   // 1. 대시보드용 순위 로드 (2024 시즌 기준)
   useEffect(() => {
@@ -30,15 +40,16 @@ export default function Standings() {
       .finally(() => setLoading(false));
   }, []);
 
-  // 2. 모달창에서 연도 탭을 누를 때마다 해당 연도 데이터 로드
+  // 2. 모달창에서 리그나 연도 탭을 누를 때마다 해당 데이터 로드
   useEffect(() => {
     if (!isModalOpen) return;
     setHistoryLoading(true);
-    axios.get(`http://localhost:3000/football/standings/history?season=${selectedSeason}`)
+    // 리그 ID 쿼리 파라미터를 추가했습니다.
+    axios.get(`http://localhost:3000/football/standings/history?season=${selectedSeason}&league=${selectedLeague.id}`)
       .then(res => setHistoryStandings(res.data))
       .catch(err => console.error('히스토리 순위 로드 실패:', err))
       .finally(() => setHistoryLoading(false));
-  }, [isModalOpen, selectedSeason]);
+  }, [isModalOpen, selectedSeason, selectedLeague.id]);
 
   const getStatusColor = (form: string) => {
     if (!form) return 'bg-gray-300';
@@ -53,8 +64,7 @@ export default function Standings() {
       {/* --- 대시보드 메인 컴포넌트 --- */}
       <div className="lg:col-span-3 bg-white rounded-[32px] p-8 shadow-sm flex flex-col">
         <div className="flex justify-between items-center mb-6">
-          {/* 요청하신 대로 타이틀을 History (24)로 변경[cite: 4] */}
-          <h2 className="text-xl font-bold">History (24)</h2>
+          <h2 className="text-xl font-bold">History</h2>
           <button className="text-gray-400 hover:text-gray-800">&gt;</button>
         </div>
         
@@ -83,7 +93,7 @@ export default function Standings() {
           </ul>
         )}
         
-        {/* 모달 여는 버튼[cite: 4] */}
+        {/* 모달 여는 버튼 */}
         <button 
           onClick={() => setIsModalOpen(true)}
           className="w-full py-3 bg-gray-50 hover:bg-gray-100 rounded-xl font-semibold text-gray-700 transition mt-auto"
@@ -97,10 +107,11 @@ export default function Standings() {
         <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50 p-4">
           <div className="bg-white rounded-[32px] w-full max-w-2xl h-[80vh] flex flex-col overflow-hidden shadow-2xl">
             
-            {/* 모달 헤더 & 연도 탭 */}
+            {/* 모달 헤더 & 리그/연도 탭 */}
             <div className="p-6 border-b border-gray-100 flex flex-col gap-4">
               <div className="flex justify-between items-center">
-                <h2 className="text-2xl font-bold">Premier League History</h2>
+                {/* 동적으로 선택된 리그 이름이 표시되도록 수정 */}
+                <h2 className="text-2xl font-bold">{selectedLeague.name} History</h2>
                 <button 
                   onClick={() => setIsModalOpen(false)}
                   className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center font-bold text-gray-500 hover:bg-gray-200"
@@ -108,7 +119,24 @@ export default function Standings() {
                   ✕
                 </button>
               </div>
-              <div className="flex gap-2 overflow-x-auto">
+              
+              {/* 추가된 리그 선택 탭 */}
+              <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+                {LEAGUES.map(league => (
+                  <button
+                    key={league.id}
+                    onClick={() => setSelectedLeague(league)}
+                    className={`px-4 py-2 rounded-full text-sm font-bold transition whitespace-nowrap ${
+                      selectedLeague.id === league.id ? 'bg-[#141b26] text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                    }`}
+                  >
+                    {league.name}
+                  </button>
+                ))}
+              </div>
+
+              {/* 기존 연도 선택 탭 */}
+              <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
                 {seasons.map(year => (
                   <button
                     key={year}
