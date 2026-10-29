@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom'; // 💡 추가됨
 import axios from 'axios';
 
 interface StandingData {
@@ -22,17 +23,14 @@ export default function Standings() {
   const [latestStandings, setLatestStandings] = useState<StandingData[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   
-  // 모달 상태 관리 (기본 선택 리그 PL, 연도 2024로 설정)
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [selectedLeague, setSelectedLeague] = useState(LEAGUES[0]);
   const [selectedSeason, setSelectedSeason] = useState<number>(2024);
   const [historyStandings, setHistoryStandings] = useState<StandingData[]>([]);
   const [historyLoading, setHistoryLoading] = useState<boolean>(false);
 
-  // 요청하신 대로 21, 25 시즌을 삭제하고 24, 23, 22만 남겼습니다.
   const seasons = [2024, 2023, 2022];
 
-  // 1. 대시보드용 순위 로드 (2024 시즌 기준)
   useEffect(() => {
     axios.get('http://localhost:3000/football/standings/latest')
       .then(res => setLatestStandings(res.data))
@@ -40,11 +38,9 @@ export default function Standings() {
       .finally(() => setLoading(false));
   }, []);
 
-  // 2. 모달창에서 리그나 연도 탭을 누를 때마다 해당 데이터 로드
   useEffect(() => {
     if (!isModalOpen) return;
     setHistoryLoading(true);
-    // 리그 ID 쿼리 파라미터를 추가했습니다.
     axios.get(`http://localhost:3000/football/standings/history?season=${selectedSeason}&league=${selectedLeague.id}`)
       .then(res => setHistoryStandings(res.data))
       .catch(err => console.error('히스토리 순위 로드 실패:', err))
@@ -61,7 +57,6 @@ export default function Standings() {
 
   return (
     <>
-      {/* --- 대시보드 메인 컴포넌트 --- */}
       <div className="lg:col-span-3 bg-white rounded-[32px] p-8 shadow-sm flex flex-col">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-bold">History</h2>
@@ -93,7 +88,6 @@ export default function Standings() {
           </ul>
         )}
         
-        {/* 모달 여는 버튼 */}
         <button 
           onClick={() => setIsModalOpen(true)}
           className="w-full py-3 bg-gray-50 hover:bg-gray-100 rounded-xl font-semibold text-gray-700 transition mt-auto"
@@ -102,15 +96,19 @@ export default function Standings() {
         </button>
       </div>
 
-      {/* --- View Full Table 모달 레이어 --- */}
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50 p-4">
-          <div className="bg-white rounded-[32px] w-full max-w-2xl h-[80vh] flex flex-col overflow-hidden shadow-2xl">
+      {/* 💡 createPortal을 사용하여 모달을 document.body로 이동 */}
+      {isModalOpen && createPortal(
+        <div 
+          className="fixed inset-0 bg-black/50 flex justify-center items-center z-[9999] p-4"
+          onClick={() => setIsModalOpen(false)} // 💡 배경 클릭 시 닫기
+        >
+          <div 
+            className="bg-white rounded-[32px] w-full max-w-2xl h-[80vh] flex flex-col overflow-hidden shadow-2xl"
+            onClick={(e) => e.stopPropagation()} // 💡 모달 내부 클릭 시 닫힘 방지
+          >
             
-            {/* 모달 헤더 & 리그/연도 탭 */}
             <div className="p-6 border-b border-gray-100 flex flex-col gap-4">
               <div className="flex justify-between items-center">
-                {/* 동적으로 선택된 리그 이름이 표시되도록 수정 */}
                 <h2 className="text-2xl font-bold">{selectedLeague.name} History</h2>
                 <button 
                   onClick={() => setIsModalOpen(false)}
@@ -120,7 +118,6 @@ export default function Standings() {
                 </button>
               </div>
               
-              {/* 추가된 리그 선택 탭 */}
               <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
                 {LEAGUES.map(league => (
                   <button
@@ -135,7 +132,6 @@ export default function Standings() {
                 ))}
               </div>
 
-              {/* 기존 연도 선택 탭 */}
               <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
                 {seasons.map(year => (
                   <button
@@ -151,7 +147,6 @@ export default function Standings() {
               </div>
             </div>
 
-            {/* 모달 컨텐츠 (순위표 리스트) */}
             <div className="flex-1 overflow-y-auto p-6 bg-gray-50">
               {historyLoading ? (
                 <div className="h-full flex items-center justify-center font-bold text-gray-400">데이터를 불러오는 중...</div>
@@ -182,7 +177,8 @@ export default function Standings() {
             </div>
             
           </div>
-        </div>
+        </div>,
+        document.body // 💡 렌더링 위치를 body로 변경
       )}
     </>
   );
