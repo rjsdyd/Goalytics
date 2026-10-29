@@ -1,9 +1,6 @@
-// src/teams/entities/league.entity.ts
-
 import { Entity, PrimaryColumn, Column } from 'typeorm';
 
-// ✅ 기존 leagues 테이블을 버리고 'api_leagues'라는 새 테이블을 생성합니다!
-@Entity('api_leagues') 
+@Entity('v2_leagues') // ✅ 충돌 방지를 위해 v2 테이블로 새로 생성
 export class League {
   @PrimaryColumn()
   id: string;

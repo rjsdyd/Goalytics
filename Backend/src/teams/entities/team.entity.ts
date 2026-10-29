@@ -1,9 +1,6 @@
-// src/teams/entities/team.entity.ts
-
 import { Entity, PrimaryColumn, Column } from 'typeorm';
 
-// ✅ 기존 teams 테이블을 버리고 'api_teams'라는 새 테이블을 생성합니다!
-@Entity('api_teams') 
+@Entity('v2_teams')
 export class Team {
   @PrimaryColumn()
   id: string;
@@ -23,9 +20,20 @@ export class Team {
   @Column()
   stadium: string;
 
+  @Column({ nullable: true })
+  stadiumImage: string; 
+
   @Column()
   manager: string;
 
   @Column({ type: 'text' })
   description: string;
+
+  // ✅ 역대 득점 순위를 저장할 JSON 컬럼 추가
+  @Column({ type: 'json', nullable: true })
+  topScorers: any;
+
+  // ✅ 역대 도움 순위를 저장할 JSON 컬럼 추가
+  @Column({ type: 'json', nullable: true })
+  topAssists: any;
 }
