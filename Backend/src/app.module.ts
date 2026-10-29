@@ -3,6 +3,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { FootballModule } from './football/football.module.js';
+import { AuthModule } from './auth/auth.module.js'; // ✅ 추가 (.js 확장자 필수)
+import { TeamsModule } from './teams/teams.module.js';
 
 @Module({
   imports: [
@@ -29,6 +31,8 @@ import { FootballModule } from './football/football.module.js';
     
     ScheduleModule.forRoot(),
     FootballModule,
+    AuthModule, // ✅ 추가: AuthModule을 앱에 등록
+    TeamsModule,
   ],
   controllers: [],
   providers: [],
