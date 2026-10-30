@@ -1,4 +1,5 @@
-import { createContext, useState, useContext } from 'react';
+// src/App.tsx
+import { createContext, useState, useContext, useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import LiveMatch from './components/LiveMatch';
@@ -6,11 +7,14 @@ import Standings from './components/History';
 import MiniStats from './components/MiniStats';
 import UpcomingFixtures from './components/NewsWidget';
 import MatchPredictions from './components/ModeSelector';
-import UCLContent from './components/UCLContent'; // 💡 새로 만들 챔스 컴포넌트
+import UCLContent from './components/UCLContent';
 import AuthPage from './pages/AuthPage';
 import LeaguesPage from './pages/LeaguesPage';
+import UELContent from './components/UELContent';
+import NationalContent from './components/NationalContent';
+import Nations from './pages/Nations';
+import NationDetail from './pages/NationDetail';
 
-// 💡 1. 모드 상태를 전역으로 공유하기 위한 Context 생성
 export const ModeContext = createContext<any>(null);
 
 function Dashboard() {
@@ -18,8 +22,6 @@ function Dashboard() {
 
   return (
     <div className="flex flex-col gap-6">
-      
-      {/* 💡 1. 부드러운 전환을 위한 커스텀 CSS 애니메이션 주입 */}
       <style>{`
         @keyframes smoothFadeIn {
           0% { opacity: 0; transform: translateY(15px); }
@@ -30,9 +32,7 @@ function Dashboard() {
         }
       `}</style>
 
-      {/* 💡 2. key={activeMode}를 부여하여 모드가 바뀔 때마다 애니메이션이 재실행되게 설정 */}
       <div key={activeMode} className="mode-transition">
-        
         {activeMode === 'league' && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             <LiveMatch />
@@ -44,21 +44,10 @@ function Dashboard() {
         )}
 
         {activeMode === 'ucl' && <UCLContent />}
-        
-        {/* 유로파, 국대 임시 화면도 높이를 420px로 맞춰서 덜컹거림 방지 */}
-        {activeMode === 'uel' && (
-          <div className="h-[420px] flex items-center justify-center bg-orange-50 rounded-[32px] font-bold text-orange-500 text-xl shadow-sm">
-            유로파 모드 준비 중...
-          </div>
-        )}
-        {activeMode === 'national' && (
-          <div className="h-[420px] flex items-center justify-center bg-purple-50 rounded-[32px] font-bold text-purple-500 text-xl shadow-sm">
-            국대 모드 준비 중...
-          </div>
-        )}
+        {activeMode === 'uel' && <UELContent/>}
+        {activeMode === 'national' && <NationalContent/>}
       </div>
 
-      {/* 하단 영역 (뉴스 & 모드 선택기) - 이 부분은 고정되어 부드러운 전환감을 더욱 돋보이게 함 */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
         <div className="lg:col-span-8 flex">
           <UpcomingFixtures />
@@ -72,19 +61,30 @@ function Dashboard() {
 }
 
 export default function App() {
-  // 앱 전체의 현재 모드 상태 (기본값: league)
-  const [activeMode, setActiveMode] = useState('league');
+  const [activeMode, setActiveMode] = useState(() => {
+    return localStorage.getItem('goalytics_active_mode') || 'league';
+  });
+
+  useEffect(() => {
+    localStorage.setItem('goalytics_active_mode', activeMode);
+  }, [activeMode]);
 
   return (
-    // Provider로 감싸서 하위 컴포넌트들이 activeMode를 읽고 쓸 수 있게 합니다.
     <ModeContext.Provider value={{ activeMode, setActiveMode }}>
       <BrowserRouter>
+        {/* 💡 데이터 개수(남미 등) 차이로 인한 스크롤바 덜컹거림 원천 차단 */}
+        <style>{`
+          html { overflow-y: scroll; } 
+        `}</style>
+        
         <div className="bg-gray-50 min-h-screen p-8 font-sans text-gray-800">
           <div className="max-w-[1200px] mx-auto">
             <Header />
             <Routes>
               <Route path="/" element={<Dashboard />} />
               <Route path="/leagues" element={<LeaguesPage />} />
+              <Route path="/nations" element={<Nations />} />
+              <Route path="/nations/:id" element={<NationDetail />} />
               <Route path="/login" element={<AuthPage />} />
             </Routes>
           </div>

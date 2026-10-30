@@ -1,3 +1,4 @@
+// src/components/Header.tsx
 import { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { ModeContext } from '../App';
@@ -36,6 +37,11 @@ export default function Header() {
         {/* 💡 리그 모드일 때만 Leagues 메뉴 표시 */}
         {activeMode === 'league' && (
           <Link to="/leagues" className="text-gray-400 hover:text-gray-900 transition">Leagues</Link>
+        )}
+
+        {/* 💡 국대 모드일 때만 국가 메뉴 표시 (새로 추가됨) */}
+        {activeMode === 'national' && (
+          <Link to="/nations" className="text-gray-400 hover:text-gray-900 transition">국가</Link>
         )}
         
         <div className="flex items-center gap-4 ml-6">
