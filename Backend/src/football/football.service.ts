@@ -104,7 +104,7 @@ export class FootballService {
     // 캐시가 유효한 경우 외부 API를 호출하지 않고 즉시 반환
     if (this.fixtureCache.has(targetDate)) {
       const cached = this.fixtureCache.get(targetDate)!;
-      if (now - cached.timestamp < 10 * 60 * 1000) {
+      if (now - cached.timestamp < 24 * 60 * 60 * 1000) {
         this.logger.log(`[캐시 Hit] ${targetDate} 경기 데이터를 메모리에서 불러옵니다. (API 호출 0회)`);
         return cached.data;
       }

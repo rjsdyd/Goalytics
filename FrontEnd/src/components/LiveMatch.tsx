@@ -20,7 +20,6 @@ export default function LiveMatch() {
     setLoading(true);
     const today = new Date().toLocaleDateString('en-CA'); 
 
-    // 💡 백엔드 서버의 /api 경로로 요청 (포트 번호는 백엔드 설정에 맞게 확인해주세요)
     axios.get(`http://localhost:3000/football/fixtures?date=${today}`)
       .then(res => {
         setMatches(res.data || []);

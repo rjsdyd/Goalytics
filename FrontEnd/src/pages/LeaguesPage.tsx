@@ -1,6 +1,6 @@
-// 프론트엔드 프로젝트: src/pages/LeaguesPage.tsx
-
-import React, { useState, useEffect } from 'react';
+// src/pages/LeaguesPage.tsx
+import { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 
 interface League {
@@ -28,11 +28,46 @@ interface Team {
 }
 
 export default function LeaguesPage() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  
   const [leagues, setLeagues] = useState<League[]>([]);
   const [activeLeague, setActiveLeague] = useState('PL');
   const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
   const [teams, setTeams] = useState<Team[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
+
+  // 💡 마이페이지에서 넘어왔을 때 자동으로 상세 화면을 띄우는 핵심 로직
+  useEffect(() => {
+    const targetTeamId = location.state?.targetTeamId;
+    if (targetTeamId) {
+      // 1. 뒤로가기 시 다시 상세페이지로 빨려 들어오는 현상을 방지하기 위해 state를 비움
+      navigate(location.pathname, { replace: true, state: {} });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      // 2. 단일 팀 조회 API가 있다고 가정하고 호출
+      api.get(`/teams/${targetTeamId}`)
+        .then(res => {
+          if (res.data) setSelectedTeam(res.data);
+        })
+        .catch(async () => {
+          // 3. 단일 조회 API가 없으면, 프론트가 전체 리그를 탐색해서 타겟 팀을 띄워줌 (Fallback)
+          const order = ['PL', 'PD', 'SA', 'BL1', 'FL1'];
+          for (const leagueId of order) {
+            try {
+              const res = await api.get(`/teams/league/${leagueId}`);
+              const foundTeam = res.data.find((t: Team) => t.id === targetTeamId);
+              if (foundTeam) {
+                setSelectedTeam(foundTeam);
+                setActiveLeague(leagueId); // 배경으로 깔려있는 리그 탭도 동기화
+                break;
+              }
+            } catch (error) {}
+          }
+        });
+    }
+  }, [location.state, location.pathname, navigate]);
 
   useEffect(() => {
     const fetchLeagues = async () => {
@@ -68,15 +103,36 @@ export default function LeaguesPage() {
   useEffect(() => {
     if (selectedTeam) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
+      
+      api.get('/mypage/favorites/teams')
+        .then((res) => {
+          const favoriteTeams = res.data;
+          setIsFavorite(favoriteTeams.some((t: any) => t.team_id === selectedTeam.id));
+        })
+        .catch(console.error);
     }
   }, [selectedTeam]);
+
+  const toggleFavorite = async () => {
+    if (!selectedTeam) return;
+    
+    try {
+      const response = await api.post('/mypage/favorites/teams', {
+        team_id: selectedTeam.id,
+        team_name: selectedTeam.name,
+        logo_url: selectedTeam.logo
+      });
+      setIsFavorite(response.data.status);
+    } catch (error) {
+      console.error('즐겨찾기 요청에 실패했습니다.', error);
+    }
+  };
 
   return (
     <div className="bg-white rounded-[32px] p-8 shadow-sm border border-gray-100 min-h-[70vh] relative">
       
       {selectedTeam ? (
         <div className="animate-fadeIn">
-          {/* 뒤로 가기 버튼 */}
           <button
             onClick={() => setSelectedTeam(null)}
             className="mb-8 flex items-center gap-2 text-gray-400 hover:text-[#141b26] transition-colors font-bold"
@@ -87,13 +143,23 @@ export default function LeaguesPage() {
             리그 목록으로 돌아가기
           </button>
 
-          {/* 1. 상단: 팀 로고 및 상세 정보 */}
           <div className="flex flex-col md:flex-row gap-8 mb-8">
             <div className="w-full md:w-1/3 bg-gray-50 rounded-3xl flex items-center justify-center p-8 border border-gray-100">
               <img src={selectedTeam.logo} alt={selectedTeam.name} className="w-48 h-48 object-contain" />
             </div>
             <div className="w-full md:w-2/3 flex flex-col justify-center">
-              <h3 className="text-4xl font-black text-[#141b26] mb-6 tracking-tight">{selectedTeam.name}</h3>
+              
+              <div className="flex items-center justify-between mb-6 w-full pr-4">
+                <h3 className="text-4xl font-black text-[#141b26] tracking-tight">{selectedTeam.name}</h3>
+                <button 
+                  onClick={toggleFavorite}
+                  className={`text-4xl transition-all hover:scale-110 drop-shadow-sm pb-1 ${!isFavorite ? 'grayscale opacity-30' : ''}`}
+                  title="즐겨찾기 추가/해제"
+                >
+                  ⭐
+                </button>
+              </div>
+
               <div className="space-y-4 bg-gray-50 p-6 rounded-2xl border border-gray-100">
                 <div className="flex items-center border-b border-gray-200 pb-4">
                   <span className="w-28 text-gray-500 font-bold text-sm">창단 연도</span>
@@ -115,9 +181,7 @@ export default function LeaguesPage() {
             </div>
           </div>
 
-          {/* 2. 중단: 역대 득점 및 도움 순위 */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-            {/* 역대 득점 순위 */}
             <div className="bg-gray-50 rounded-3xl p-8 border border-gray-100">
               <h4 className="text-2xl font-black text-[#141b26] mb-6 flex items-center gap-3 tracking-tight">
                 <span className="w-2.5 h-8 bg-[#41e307] rounded-full shadow-sm"></span>
@@ -140,7 +204,6 @@ export default function LeaguesPage() {
               </div>
             </div>
 
-            {/* 역대 도움 순위 */}
             <div className="bg-gray-50 rounded-3xl p-8 border border-gray-100">
               <h4 className="text-2xl font-black text-[#141b26] mb-6 flex items-center gap-3 tracking-tight">
                 <span className="w-2.5 h-8 bg-[#41e307] rounded-full shadow-sm"></span>
@@ -165,7 +228,6 @@ export default function LeaguesPage() {
           </div>
         </div>
       ) : (
-        /* 기본 리그 및 팀 목록 화면 */
         <div className="animate-fadeIn">
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-2xl font-bold text-gray-900 tracking-tight">리그 및 팀 소개</h2>

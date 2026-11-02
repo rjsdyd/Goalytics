@@ -30,6 +30,7 @@ export class AuthService {
     // 유저 생성 및 저장
     const user = this.userRepository.create({
       email,
+      password: '', // 엔티티와 DB 제약조건 모두 충족
       password_hash: hashedPassword,
       nickname,
     });

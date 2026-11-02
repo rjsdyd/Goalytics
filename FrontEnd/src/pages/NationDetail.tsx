@@ -9,17 +9,16 @@ export default function NationDetail() {
   const navigate = useNavigate();
   const [team, setTeam] = useState<NationalTeam | null>(null);
   const [loading, setLoading] = useState(true);
+  
+  const [isFavorite, setIsFavorite] = useState(false);
 
   useEffect(() => {
     setLoading(true);
-    // 💡 1. 백엔드 API에서 동적 정보(감독, 주장, 팀 설명 등) 호출
     axios.get(`http://localhost:3000/football/nations/${id}`)
       .then(res => {
         const apiData = res.data;
-        // 💡 2. 로컬 데이터에서 해당 국가의 정적 정보(득점/도움 순위, 우승 기록) 추출
         const manualData = NATIONAL_TEAMS.find(t => t.id === id);
         
-        // 💡 3. API 데이터와 로컬 수동 데이터를 완벽하게 병합(Merge)
         setTeam({
           id: apiData.id || id,
           name: apiData.name,
@@ -27,19 +26,43 @@ export default function NationDetail() {
           manager: apiData.manager,
           captain: apiData.captain,
           description: apiData.description,
-          // 아래 기록들은 백엔드에 없으므로 로컬 데이터 사용 (없으면 빈 배열)
           topScorers: manualData?.topScorers || [],
           topAssists: manualData?.topAssists || [],
           honors: manualData?.honors || []
         });
       })
       .catch(() => {
-        // API 미구현/장애 시 순수 로컬 데이터로 Fallback
         const foundTeam = NATIONAL_TEAMS.find(t => t.id === id) || null;
         setTeam(foundTeam);
       })
       .finally(() => setLoading(false));
   }, [id]);
+
+  useEffect(() => {
+    if (team) {
+      axios.get('http://localhost:3000/mypage/favorites/nations')
+        .then((res) => {
+          const favoriteNations = res.data;
+          setIsFavorite(favoriteNations.some((t: any) => t.nation_id === team.id));
+        })
+        .catch(console.error);
+    }
+  }, [team]);
+
+  const toggleFavorite = async () => {
+    if (!team) return;
+    
+    try {
+      const response = await axios.post('http://localhost:3000/mypage/favorites/nations', {
+        nation_id: team.id,
+        nation_name: team.name,
+        logo_url: `https://flagcdn.com/w160/${team.id}.png`
+      });
+      setIsFavorite(response.data.status);
+    } catch (error) {
+      console.error('즐겨찾기 요청에 실패했습니다.', error);
+    }
+  };
 
   if (loading) return <div className="p-10 text-center font-bold text-gray-400">데이터 로딩 중...</div>;
   if (!team) return <div className="p-10 text-center font-bold text-gray-400">국가 데이터를 찾을 수 없습니다.</div>;
@@ -55,22 +78,32 @@ export default function NationDetail() {
       </button>
 
       <div className="bg-white w-full rounded-[32px] overflow-hidden shadow-sm flex flex-col">
-        {/* 상단 헤더 영역 */}
         <div className="bg-gradient-to-r from-purple-900 to-purple-800 p-10 flex items-start relative overflow-hidden">
           <div className="absolute right-[-5%] top-[-50%] opacity-10 w-96 h-96 transform rotate-12 pointer-events-none">
             <img src={`https://flagcdn.com/w320/${team.id}.png`} alt="배경 국기" className="w-full h-full object-cover blur-md" />
           </div>
           
-          <div className="flex items-center gap-8 z-10">
+          {/* 💡 헤더 영역을 꽉 채우고(flex-1), 버튼을 우측 끝으로 밀어냄 */}
+          <div className="flex items-center gap-8 z-10 w-full pr-4">
             <img src={`https://flagcdn.com/w160/${team.id}.png`} alt="국기" className="w-32 h-32 rounded-full border-4 border-white/20 shadow-lg object-cover bg-gray-100" />
-            <div className="flex flex-col text-white">
+            <div className="flex flex-col text-white flex-1">
               <span className="text-purple-200 font-bold text-md tracking-widest uppercase mb-1">{team.confederation}</span>
-              <h2 className="text-5xl font-black tracking-tight">{team.name}</h2>
+              
+              <div className="flex items-center justify-between w-full">
+                <h2 className="text-5xl font-black tracking-tight">{team.name}</h2>
+                <button 
+                  onClick={toggleFavorite}
+                  className={`text-4xl transition-all hover:scale-110 drop-shadow-sm pb-1 ${!isFavorite ? 'grayscale opacity-40' : ''}`}
+                  title="즐겨찾기 추가/해제"
+                >
+                  ⭐
+                </button>
+              </div>
+              
             </div>
           </div>
         </div>
 
-        {/* 하단 상세 데이터 영역 */}
         <div className="p-10 flex flex-col gap-10 bg-gray-50/50">
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

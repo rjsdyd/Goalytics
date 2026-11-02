@@ -1,6 +1,7 @@
 // src/App.tsx
 import { createContext, useState, useContext, useEffect } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import type { ReactNode } from 'react';
+import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import Header from './components/Header';
 import LiveMatch from './components/LiveMatch';
 import Standings from './components/History';
@@ -14,6 +15,7 @@ import UELContent from './components/UELContent';
 import NationalContent from './components/NationalContent';
 import Nations from './pages/Nations';
 import NationDetail from './pages/NationDetail';
+import MyPage from './components/Mypage';
 
 export const ModeContext = createContext<any>(null);
 
@@ -60,6 +62,43 @@ function Dashboard() {
   );
 }
 
+const ProtectedRoute = ({ children }: { children: ReactNode }) => {
+  const token = localStorage.getItem('access_token');
+  if (!token) {
+    alert('로그인이 필요한 서비스입니다. 로그인 페이지로 이동합니다.');
+    return <Navigate to="/login" replace />;
+  }
+  return <>{children}</>;
+};
+
+function AppLayout() {
+  const location = useLocation();
+  const isLoginPage = location.pathname === '/login';
+
+  return (
+    <div className="bg-gray-50 min-h-screen p-8 font-sans text-gray-800">
+      <div className="max-w-[1200px] mx-auto">
+        {!isLoginPage && <Header />}
+        <Routes>
+          <Route path="/" element={<Dashboard />} />
+          <Route 
+            path="/mypage" 
+            element={
+              <ProtectedRoute>
+                <MyPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route path="/leagues" element={<LeaguesPage />} />
+          <Route path="/nations" element={<Nations />} />
+          <Route path="/nations/:id" element={<NationDetail />} />
+          <Route path="/login" element={<AuthPage />} />
+        </Routes>
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
   const [activeMode, setActiveMode] = useState(() => {
     return localStorage.getItem('goalytics_active_mode') || 'league';
@@ -72,23 +111,10 @@ export default function App() {
   return (
     <ModeContext.Provider value={{ activeMode, setActiveMode }}>
       <BrowserRouter>
-        {/* 💡 데이터 개수(남미 등) 차이로 인한 스크롤바 덜컹거림 원천 차단 */}
         <style>{`
           html { overflow-y: scroll; } 
         `}</style>
-        
-        <div className="bg-gray-50 min-h-screen p-8 font-sans text-gray-800">
-          <div className="max-w-[1200px] mx-auto">
-            <Header />
-            <Routes>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/leagues" element={<LeaguesPage />} />
-              <Route path="/nations" element={<Nations />} />
-              <Route path="/nations/:id" element={<NationDetail />} />
-              <Route path="/login" element={<AuthPage />} />
-            </Routes>
-          </div>
-        </div>
+        <AppLayout />
       </BrowserRouter>
     </ModeContext.Provider>
   );
