@@ -11,6 +11,9 @@ import { Standing } from './entities/standing.entity.js';
 @Injectable()
 export class FootballService {
   private readonly logger = new Logger(FootballService.name);
+  
+  // 💡 API 호출 절약을 위한 메모리 캐시 저장소 (10분 유지)
+  private fixtureCache: Map<string, { data: any[]; timestamp: number }> = new Map();
 
   constructor(
     private readonly httpService: HttpService,
@@ -56,7 +59,7 @@ export class FootballService {
     return await this.leagueRepository.find();
   }
 
-  // 2. 실시간 경기(Fixtures) 로직
+  // 2. 실시간 경기(Fixtures) Cron 로직
   @Cron(CronExpression.EVERY_12_HOURS) 
   async fetchAndUpsertLiveFixtures() {
     this.logger.log('실시간 경기 데이터 동기화 시작...');
@@ -91,6 +94,99 @@ export class FootballService {
 
   async getSavedFixtures() {
     return await this.fixtureRepository.find({ order: { match_date: 'ASC' } });
+  }
+
+  // 💡 [캐싱 적용됨] 프론트엔드 요청 시 10분간 메모리에서 응답하여 API 사용량을 0회로 방어합니다.
+  async getFixturesByDate(date?: string) {
+    const targetDate = date || new Date().toLocaleDateString('en-CA');
+    const now = Date.now();
+
+    // 캐시가 유효한 경우 외부 API를 호출하지 않고 즉시 반환
+    if (this.fixtureCache.has(targetDate)) {
+      const cached = this.fixtureCache.get(targetDate)!;
+      if (now - cached.timestamp < 10 * 60 * 1000) {
+        this.logger.log(`[캐시 Hit] ${targetDate} 경기 데이터를 메모리에서 불러옵니다. (API 호출 0회)`);
+        return cached.data;
+      }
+    }
+
+    const majorLeagueIds = [39, 140, 135, 78, 61, 2, 3, 292]; 
+    let currentDate = targetDate;
+    let filteredMatches: any[] = [];
+
+    try {
+      for (let i = 0; i < 3; i++) {
+        const response = await firstValueFrom(
+          this.httpService.get('https://v3.football.api-sports.io/fixtures', {
+            headers: {
+              'x-rapidapi-host': 'v3.football.api-sports.io',
+              'x-rapidapi-key': process.env.API_FOOTBALL_KEY,
+            },
+            params: { date: currentDate },
+          }),
+        );
+
+        const allMatches = response.data.response || [];
+        filteredMatches = allMatches.filter((item: any) =>
+          item.league && majorLeagueIds.includes(item.league.id)
+        );
+
+        if (filteredMatches.length > 0) {
+          this.logger.log(`[최신 경기 로드 성공] 기준 날짜: ${currentDate} (총 ${filteredMatches.length}개 경기)`);
+          break;
+        }
+
+        const prevDate = new Date(currentDate);
+        prevDate.setDate(prevDate.getDate() - 1);
+        currentDate = prevDate.toLocaleDateString('en-CA');
+      }
+
+      const result = filteredMatches.slice(0, 10).map((item: any) => {
+        const statusCode = item.fixture.status.short;
+        let matchStatus: 'LIVE' | 'FT' | 'SCHEDULED' = 'SCHEDULED';
+
+        if (['FT', 'AET', 'PEN'].includes(statusCode)) {
+          matchStatus = 'FT';
+        } else if (['1H', '2H', 'HT', 'ET', 'BT', 'P', 'LIVE'].includes(statusCode)) {
+          matchStatus = 'LIVE';
+        }
+
+        let matchTime = '';
+        if (matchStatus === 'LIVE') {
+          matchTime = item.fixture.status.elapsed ? `${item.fixture.status.elapsed}'` : 'LIVE';
+        } else {
+          matchTime = new Date(item.fixture.date).toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit',
+          });
+        }
+
+        const homeGoal = item.goals.home;
+        const awayGoal = item.goals.away;
+        const scoreStr =
+          homeGoal !== null && awayGoal !== null
+            ? `${homeGoal} - ${awayGoal}`
+            : '- vs -';
+
+        return {
+          id: item.fixture.id,
+          league: item.league.name,
+          homeTeam: { name: item.teams.home.name, logo: item.teams.home.logo },
+          awayTeam: { name: item.teams.away.name, logo: item.teams.away.logo },
+          score: scoreStr,
+          status: matchStatus,
+          time: matchStatus === 'FT' ? '종료' : matchTime,
+        };
+      });
+
+      // 결과를 캐시에 저장 (10분)
+      this.fixtureCache.set(targetDate, { data: result, timestamp: now });
+      return result;
+
+    } catch (error: any) {
+      this.logger.error('최신 경기 데이터 조회 중 오류 발생:', error.message);
+      return [];
+    }
   }
 
   // 3. 순위표(Standings) 로직 - 5대 리그 & 최근 3년(24, 23, 22) 최적화 및 딜레이 적용
@@ -164,24 +260,21 @@ export class FootballService {
   }
 
   // 4. 실시간 외부 뉴스 API 연동 로직
-async getLatestNews() {
+  async getLatestNews() {
     try {
       const response = await firstValueFrom(
         this.httpService.get('https://newsapi.org/v2/everything', {
           params: {
-            // 💡 검색어를 순수 축구 키워드로 더 구체화합니다.
             q: '"축구" OR "프리미어리그" OR "손흥민" OR "챔피언스리그" OR "이강인" OR "김민재"',
             language: 'ko',
             sortBy: 'publishedAt',
-            pageSize: 20, // 넉넉하게 20개를 받아온 뒤 축구 관련 기사만 골라냅니다.
+            pageSize: 20,
             apiKey: process.env.NEWS_API_KEY,
           },
         }),
       );
 
       const articles = response.data.articles || [];
-
-      // 💡 2중 안전장치: 제목이나 요약에 축구 관련 키워드가 확실히 포함된 기사만 필터링합니다.
       const footballKeywords = ['축구', '리그', '손흥민', '이강인', '김민재', '감독', '골', 'FC', '매치', '월드컵', 'K리그', '토트넘', '바르셀로나', '레알', '맨시티'];
       
       const filteredArticles = articles.filter((article: any) => {
@@ -189,7 +282,6 @@ async getLatestNews() {
         return footballKeywords.some(keyword => text.includes(keyword.toLowerCase()));
       });
 
-      // 최종적으로 딱 4개만 잘라서 가공합니다.
       return filteredArticles.slice(0, 4).map((article: any, index: number) => {
         let tag = 'News';
         let tagColor = 'bg-blue-100 text-blue-600';

@@ -15,9 +15,9 @@ export class FootballController {
     return await this.footballService.getSavedLeagues();
   }
 
-  @Get('fixtures')
-  async getFixtures() {
-    return await this.footballService.getSavedFixtures();
+  @Get('/fixtures')
+  async getFixtures(@Query('date') date: string) {
+    return await this.footballService.getFixturesByDate(date);
   }
 
   // 브라우저에서 이 주소로 접속하면 5년치 데이터를 긁어옵니다. (시간이 조금 걸릴 수 있습니다)
@@ -31,6 +31,7 @@ export class FootballController {
   async getLatestStandings() {
     return await this.footballService.getLatestStandings();
   }
+  
 
   // 모달 창용 (특정 연도/리그 요청 시 해당 순위 반환)
   @Get('standings/history')
