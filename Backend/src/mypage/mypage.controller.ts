@@ -1,39 +1,58 @@
-// src/mypage/mypage.controller.ts
-import { Controller, Get, Post, Delete, Body } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Body, Headers, UnauthorizedException } from '@nestjs/common';
 import { MyPageService } from './mypage.service.js';
 
 @Controller('mypage')
 export class MyPageController {
   constructor(private readonly mypageService: MyPageService) {}
 
+  private getUserIdFromToken(authHeader: string): number {
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      throw new UnauthorizedException('로그인 토큰이 없습니다.');
+    }
+    const token = authHeader.split(' ')[1];
+    try {
+      const payloadBase64 = token.split('.')[1];
+      const decodedJson = Buffer.from(payloadBase64, 'base64').toString('utf8');
+      const payload = JSON.parse(decodedJson);
+      return payload.sub; 
+    } catch (error) {
+      throw new UnauthorizedException('유효하지 않은 토큰입니다.');
+    }
+  }
+
   @Get('profile')
-  getProfile() {
-    return this.mypageService.getProfile(1);
+  getProfile(@Headers('authorization') authHeader: string) {
+    const userId = this.getUserIdFromToken(authHeader);
+    return this.mypageService.getProfile(userId);
   }
 
   @Get('favorites/teams')
-  getFavoriteTeams() {
-    return this.mypageService.getFavoriteTeams(1);
+  getFavoriteTeams(@Headers('authorization') authHeader: string) {
+    const userId = this.getUserIdFromToken(authHeader);
+    return this.mypageService.getFavoriteTeams(userId);
   }
 
   @Get('favorites/nations')
-  getFavoriteNations() {
-    return this.mypageService.getFavoriteNations(1);
+  getFavoriteNations(@Headers('authorization') authHeader: string) {
+    const userId = this.getUserIdFromToken(authHeader);
+    return this.mypageService.getFavoriteNations(userId);
   }
 
   @Post('favorites/teams')
-  toggleFavoriteTeam(@Body() body: any) {
-    return this.mypageService.toggleFavoriteTeam(1, body);
+  toggleFavoriteTeam(@Headers('authorization') authHeader: string, @Body() body: any) {
+    const userId = this.getUserIdFromToken(authHeader);
+    return this.mypageService.toggleFavoriteTeam(userId, body);
   }
 
   @Post('favorites/nations')
-  toggleFavoriteNation(@Body() body: any) {
-    return this.mypageService.toggleFavoriteNation(1, body);
+  toggleFavoriteNation(@Headers('authorization') authHeader: string, @Body() body: any) {
+    const userId = this.getUserIdFromToken(authHeader);
+    return this.mypageService.toggleFavoriteNation(userId, body);
   }
 
-  // 💡 탈퇴 API 라우트 추가
   @Delete('withdraw')
-  withdraw() {
-    return this.mypageService.withdraw(1);
+  withdraw(@Headers('authorization') authHeader: string) {
+    const userId = this.getUserIdFromToken(authHeader);
+    return this.mypageService.withdraw(userId);
   }
 }

@@ -40,23 +40,39 @@ export default function NationDetail() {
 
   useEffect(() => {
     if (team) {
-      axios.get('http://localhost:3000/mypage/favorites/nations')
-        .then((res) => {
-          const favoriteNations = res.data;
-          setIsFavorite(favoriteNations.some((t: any) => t.nation_id === team.id));
+      // 💡 GET 요청 시 JWT 토큰 헤더 추가
+      const token = localStorage.getItem('access_token');
+      if (token) {
+        axios.get('http://localhost:3000/mypage/favorites/nations', {
+          headers: { Authorization: `Bearer ${token}` }
         })
-        .catch(console.error);
+          .then((res) => {
+            const favoriteNations = res.data;
+            setIsFavorite(favoriteNations.some((t: any) => t.nation_id === team.id));
+          })
+          .catch(console.error);
+      }
     }
   }, [team]);
 
   const toggleFavorite = async () => {
     if (!team) return;
     
+    // 💡 로그인하지 않은 유저 차단 (선택적)
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      alert('로그인이 필요한 기능입니다.');
+      return;
+    }
+
     try {
+      // 💡 POST 요청 시 JWT 토큰 헤더 추가
       const response = await axios.post('http://localhost:3000/mypage/favorites/nations', {
         nation_id: team.id,
         nation_name: team.name,
         logo_url: `https://flagcdn.com/w160/${team.id}.png`
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
       });
       setIsFavorite(response.data.status);
     } catch (error) {
@@ -83,7 +99,6 @@ export default function NationDetail() {
             <img src={`https://flagcdn.com/w320/${team.id}.png`} alt="배경 국기" className="w-full h-full object-cover blur-md" />
           </div>
           
-          {/* 💡 헤더 영역을 꽉 채우고(flex-1), 버튼을 우측 끝으로 밀어냄 */}
           <div className="flex items-center gap-8 z-10 w-full pr-4">
             <img src={`https://flagcdn.com/w160/${team.id}.png`} alt="국기" className="w-32 h-32 rounded-full border-4 border-white/20 shadow-lg object-cover bg-gray-100" />
             <div className="flex flex-col text-white flex-1">
@@ -93,7 +108,7 @@ export default function NationDetail() {
                 <h2 className="text-5xl font-black tracking-tight">{team.name}</h2>
                 <button 
                   onClick={toggleFavorite}
-                  className={`text-4xl transition-all hover:scale-110 drop-shadow-sm pb-1 ${!isFavorite ? 'grayscale opacity-40' : ''}`}
+                  className={`text-4xl transition-all hover:scale-110 drop-shadow-sm pb-1 cursor-pointer ${!isFavorite ? 'grayscale opacity-40 hover:opacity-80' : ''}`}
                   title="즐겨찾기 추가/해제"
                 >
                   ⭐

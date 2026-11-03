@@ -1,8 +1,8 @@
-// src/mypage/mypage.service.ts
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User, FavoriteTeam, FavoriteNation } from './entities/mypage.entity.js';
+import { User } from '../users/entities/user.entity.js'; // 💡 올바른 User 엔티티 경로
+import { FavoriteTeam, FavoriteNation } from './entities/mypage.entity.js';
 
 @Injectable()
 export class MyPageService {
@@ -19,7 +19,7 @@ export class MyPageService {
 
     if (!user) {
       return {
-        nickname: 'Mancity',
+        nickname: '사용자',
         created_at: new Date(),
         favoriteTeamCount: teamCount,
         favoriteNationCount: nationCount,
@@ -88,7 +88,6 @@ export class MyPageService {
     }
   }
 
-  // 💡 탈퇴 기능 로직 추가
   async withdraw(userId: number) {
     await this.favoriteTeamRepository.delete({ user_id: userId });
     await this.favoriteNationRepository.delete({ user_id: userId });

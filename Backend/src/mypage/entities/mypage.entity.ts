@@ -1,23 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
-
-@Entity('users')
-export class User {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @Column({ type: 'varchar', length: 255, unique: true })
-  email: string;
-
-  // 💡 추가된 비밀번호 컬럼
-  @Column({ type: 'varchar', length: 255 })
-  password: string;
-
-  @Column({ type: 'varchar', length: 100 })
-  nickname: string;
-
-  @CreateDateColumn()
-  created_at: Date;
-}
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity('favorite_teams')
 export class FavoriteTeam {
