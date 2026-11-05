@@ -41,7 +41,8 @@ export class AuthService {
   }
 
   // 2. 로그인 (Login)
-  async login(authDto: any): Promise<{ access_token: string; nickname: string }> {
+  // 💡 반환 타입에 role: string 추가
+  async login(authDto: any): Promise<{ access_token: string; nickname: string; role: string }> {
     const { email, password } = authDto;
 
     // 유저 검증
@@ -56,13 +57,19 @@ export class AuthService {
       throw new UnauthorizedException('이메일 또는 비밀번호가 일치하지 않습니다.');
     }
 
-    // JWT 페이로드 구성 및 토큰 발급
-    const payload = { sub: user.id, email: user.email, nickname: user.nickname };
+    // 💡 JWT 페이로드에 role 추가
+    const payload = { 
+      sub: user.id, 
+      email: user.email, 
+      nickname: user.nickname,
+      role: user.role 
+    };
     const accessToken = this.jwtService.sign(payload);
 
     return {
       access_token: accessToken,
       nickname: user.nickname,
+      role: user.role, // 💡 프론트엔드로 함께 내려줄 role 정보 추가
     };
   }
 }

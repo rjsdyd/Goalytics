@@ -6,16 +6,21 @@ import { ModeContext } from '../App';
 export default function Header() {
   const { activeMode } = useContext(ModeContext);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [nickname, setNickname] = useState(''); // 💡 실제 닉네임을 저장할 상태 추가
+  const [nickname, setNickname] = useState(''); 
+  const [role, setRole] = useState('user'); // 💡 유저 권한(role)을 저장할 상태 추가
 
   useEffect(() => {
     const token = localStorage.getItem('access_token');
-    const storedNickname = localStorage.getItem('nickname'); // 💡 저장된 닉네임 불러오기
+    const storedNickname = localStorage.getItem('nickname'); 
+    const storedRole = localStorage.getItem('role'); // 💡 저장된 role 불러오기
 
     if (token) {
       setIsLoggedIn(true);
       if (storedNickname) {
         setNickname(storedNickname);
+      }
+      if (storedRole) {
+        setRole(storedRole); // 💡 role 상태 업데이트
       }
     }
   }, []);
@@ -43,7 +48,6 @@ export default function Header() {
   }
 
   const handleLogout = () => {
-    // 💡 로그아웃 시 토큰 및 닉네임 데이터 완벽 초기화
     localStorage.clear();
     window.location.replace('/login'); 
   };
@@ -58,8 +62,13 @@ export default function Header() {
       </Link>
       
       <nav className="flex items-center gap-8 font-bold text-sm">
+        {/* 💡 권한(role)이 admin이면 관리자 페이지, 아니면 마이페이지 출력 */}
         {isLoggedIn && (
-          <Link to="/mypage" className="text-gray-900 hover:opacity-70 transition">마이페이지</Link>
+          role === 'admin' ? (
+            <Link to="/admin" className="text-gray-900 hover:opacity-70 transition">관리자 페이지</Link>
+          ) : (
+            <Link to="/mypage" className="text-gray-900 hover:opacity-70 transition">마이페이지</Link>
+          )
         )}
         
         <Link to="/" className="text-gray-900 hover:opacity-70 transition">Dashboard</Link>
@@ -74,7 +83,6 @@ export default function Header() {
         <div className="flex items-center gap-4 ml-6">
           {isLoggedIn ? (
             <>
-              {/* 💡 고정된 닉네임 대신 실제 로그인한 유저의 닉네임 출력 */}
               <span className="text-gray-600">{nickname ? `${nickname}님 환영합니다!` : '환영합니다!'}</span>
               <button 
                 onClick={handleLogout}

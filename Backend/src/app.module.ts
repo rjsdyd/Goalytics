@@ -7,6 +7,8 @@ import { FootballModule } from './football/football.module.js';
 import { AuthModule } from './auth/auth.module.js'; // ✅ 추가 (.js 확장자 필수)
 import { TeamsModule } from './teams/teams.module.js';
 import { MyPageModule } from './mypage/mypage.module.js'; // ✅ MyPageModule 추가
+import { InquiriesModule } from './inquiries/inquiries.module.js'; // 💡 문의함 모듈 추가
+import { UsersModule } from './users/users.module.js'; // 💡 유저 관리 모듈 추가
 
 @Module({
   imports: [
@@ -36,6 +38,8 @@ import { MyPageModule } from './mypage/mypage.module.js'; // ✅ MyPageModule �
     AuthModule, // ✅ 추가: AuthModule을 앱에 등록
     TeamsModule,
     MyPageModule, // ✅ MyPageModule 등록
+    InquiriesModule, // 💡 추가: InquiriesModule 등록
+    UsersModule, // 💡 추가: UsersModule 등록
   ],
   controllers: [],
   providers: [],

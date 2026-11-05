@@ -18,6 +18,10 @@ export class User {
   @Column({ length: 50 })
   nickname: string;
 
+  // 💡 새롭게 추가된 관리자 권한 컬럼 (기본값: 일반 유저)
+  @Column({ type: 'varchar', length: 20, default: 'user' })
+  role: string; // 'user' 또는 'admin'
+
   @CreateDateColumn()
   created_at: Date;
 }

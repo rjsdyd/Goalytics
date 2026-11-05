@@ -12,6 +12,11 @@ export default function MyPage() {
   const [favoriteNations, setFavoriteNations] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // 💡 문의하기 모달 상태 관리
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [inquiryCategory, setInquiryCategory] = useState('[팀 추가 요청]');
+  const [inquiryContent, setInquiryContent] = useState('');
+
   const teamAccentBg = 'bg-[#41e307]';
   const teamHoverBorder = 'hover:border-[#41e307]';
   const nationAccentBg = 'bg-purple-500';
@@ -20,7 +25,6 @@ export default function MyPage() {
   useEffect(() => {
     const fetchMyPageData = async () => {
       try {
-        // 💡 localStorage에서 JWT 토큰 가져오기
         const token = localStorage.getItem('access_token');
         const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
@@ -30,7 +34,6 @@ export default function MyPage() {
           axios.get('http://localhost:3000/mypage/favorites/nations', { headers })
         ]);
         
-        // 💡 백엔드 프로필 데이터와 localStorage의 닉네임을 동기화 (우선순위: 백엔드 -> 로컬스토리지 -> '사용자')
         const localNickname = localStorage.getItem('nickname');
         const profileData = {
           ...profileRes.data,
@@ -50,7 +53,6 @@ export default function MyPage() {
     fetchMyPageData();
   }, []);
 
-  // 💡 회원 탈퇴 처리 로직
   const handleWithdraw = async () => {
     const isConfirmed = window.confirm('정말로 회원 탈퇴를 진행하시겠습니까?\n저장된 모든 즐겨찾기 데이터가 영구적으로 삭제됩니다.');
     
@@ -67,6 +69,35 @@ export default function MyPage() {
         console.error('탈퇴 처리 중 에러 발생:', error);
         alert('탈퇴 처리 중 문제가 발생했습니다.');
       }
+    }
+  };
+
+  // 💡 문의 제출 함수
+  const handleInquirySubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const token = localStorage.getItem('access_token');
+    
+    if (!token) {
+      alert('로그인이 필요합니다.');
+      return;
+    }
+
+    try {
+      await axios.post('http://localhost:3000/inquiries', 
+        { 
+          title: inquiryCategory, 
+          content: inquiryContent 
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      
+      alert('문의가 성공적으로 접수되었습니다. 관리자가 확인 후 반영하겠습니다.');
+      setIsModalOpen(false);
+      setInquiryContent('');
+      setInquiryCategory('[팀 추가 요청]');
+    } catch (error) {
+      console.error('문의 접수 실패:', error);
+      alert('문의 접수 중 오류가 발생했습니다.');
     }
   };
 
@@ -114,12 +145,22 @@ export default function MyPage() {
 
         </div>
         
-        <button 
-          onClick={handleWithdraw}
-          className="text-sm font-bold text-gray-400 hover:text-red-500 bg-gray-50 hover:bg-red-50 px-5 py-2.5 rounded-xl transition-colors"
-        >
-          회원 탈퇴
-        </button>
+        <div className="flex gap-3">
+          {/* 💡 문의하기 버튼 추가 */}
+          <button 
+            onClick={() => setIsModalOpen(true)}
+            className="text-sm font-bold text-[#141b26] bg-[#41e307] hover:opacity-80 px-5 py-2.5 rounded-xl transition-opacity shadow-sm"
+          >
+            지원 및 문의하기
+          </button>
+          
+          <button 
+            onClick={handleWithdraw}
+            className="text-sm font-bold text-gray-400 hover:text-red-500 bg-gray-50 hover:bg-red-50 px-5 py-2.5 rounded-xl transition-colors"
+          >
+            회원 탈퇴
+          </button>
+        </div>
       </div>
 
       <div className="bg-white p-10 rounded-[32px] shadow-sm border border-gray-100">
@@ -187,6 +228,53 @@ export default function MyPage() {
           )}
         </div>
       </div>
+
+      {/* 💡 문의하기 모달 (Modal) 컴포넌트: 배경을 흰색 반투명으로 수정 */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-white bg-opacity-80 backdrop-blur-sm">
+          <div className="bg-white p-8 rounded-3xl shadow-xl w-full max-w-md border border-gray-200 animate-fadeIn">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-black text-gray-900 tracking-tight">Goalytics 문의하기</h2>
+              <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-900 font-bold text-xl">✕</button>
+            </div>
+            
+            <form onSubmit={handleInquirySubmit} className="flex flex-col gap-5">
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-bold text-gray-700">문의 유형</label>
+                <select 
+                  value={inquiryCategory}
+                  onChange={(e) => setInquiryCategory(e.target.value)}
+                  className="px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:border-[#41e307] font-medium bg-white"
+                >
+                  <option value="[팀 추가 요청]">팀 추가 요청</option>
+                  <option value="[국가 추가 요청]">국가 추가 요청</option>
+                  <option value="[기능 추가 요청]">기능 추가 요청</option>
+                  <option value="[기타 문의]">기타 문의</option>
+                </select>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-bold text-gray-700">상세 내용</label>
+                <textarea 
+                  value={inquiryContent}
+                  onChange={(e) => setInquiryContent(e.target.value)}
+                  placeholder="추가를 원하시는 팀명이나 기능 등을 자유롭게 적어주세요."
+                  rows={5}
+                  className="px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:border-[#41e307] font-medium resize-none"
+                  required
+                />
+              </div>
+
+              <button 
+                type="submit"
+                className="w-full bg-[#141b26] text-white font-bold text-lg py-4 rounded-xl hover:bg-black transition mt-2 shadow-sm"
+              >
+                문의 접수하기
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
 
     </div>
   );

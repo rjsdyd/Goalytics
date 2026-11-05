@@ -16,6 +16,7 @@ import NationalContent from './components/NationalContent';
 import Nations from './pages/Nations';
 import NationDetail from './pages/NationDetail';
 import MyPage from './components/Mypage';
+import AdminPage from './pages/AdminPage'; // 💡 관리자 페이지 import 추가
 
 export const ModeContext = createContext<any>(null);
 
@@ -86,6 +87,15 @@ function AppLayout() {
             element={
               <ProtectedRoute>
                 <MyPage />
+              </ProtectedRoute>
+            } 
+          />
+          {/* 💡 관리자 페이지 라우팅 추가 (보호된 라우트로 설정) */}
+          <Route 
+            path="/admin" 
+            element={
+              <ProtectedRoute>
+                <AdminPage />
               </ProtectedRoute>
             } 
           />
