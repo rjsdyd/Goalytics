@@ -1,6 +1,7 @@
 // src/pages/LeaguesPage.tsx
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import api from '../api/axios';
 
 interface League {
@@ -38,21 +39,21 @@ export default function LeaguesPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
 
-  // 💡 마이페이지에서 넘어왔을 때 자동으로 상세 화면을 띄우는 핵심 로직
+  // 💡 AI 전술 브리핑 상태 관리
+  const [aiBriefing, setAiBriefing] = useState<string | null>(null);
+  const [aiLoading, setAiLoading] = useState(false);
+
   useEffect(() => {
     const targetTeamId = location.state?.targetTeamId;
     if (targetTeamId) {
-      // 1. 뒤로가기 시 다시 상세페이지로 빨려 들어오는 현상을 방지하기 위해 state를 비움
       navigate(location.pathname, { replace: true, state: {} });
       window.scrollTo({ top: 0, behavior: 'smooth' });
 
-      // 2. 단일 팀 조회 API가 있다고 가정하고 호출
       api.get(`/teams/${targetTeamId}`)
         .then(res => {
           if (res.data) setSelectedTeam(res.data);
         })
         .catch(async () => {
-          // 3. 단일 조회 API가 없으면, 프론트가 전체 리그를 탐색해서 타겟 팀을 띄워줌 (Fallback)
           const order = ['PL', 'PD', 'SA', 'BL1', 'FL1'];
           for (const leagueId of order) {
             try {
@@ -60,7 +61,7 @@ export default function LeaguesPage() {
               const foundTeam = res.data.find((t: Team) => t.id === targetTeamId);
               if (foundTeam) {
                 setSelectedTeam(foundTeam);
-                setActiveLeague(leagueId); // 배경으로 깔려있는 리그 탭도 동기화
+                setActiveLeague(leagueId); 
                 break;
               }
             } catch (error) {}
@@ -110,12 +111,26 @@ export default function LeaguesPage() {
           setIsFavorite(favoriteTeams.some((t: any) => t.team_id === selectedTeam.id));
         })
         .catch(console.error);
+
+      fetchAiBriefing(selectedTeam.name);
     }
   }, [selectedTeam]);
 
+  const fetchAiBriefing = async (teamName: string) => {
+    setAiLoading(true);
+    setAiBriefing(null);
+    try {
+      const res = await axios.get(`http://localhost:3000/ai/tactics?team=${encodeURIComponent(teamName)}`);
+      setAiBriefing(res.data.briefing);
+    } catch (error) {
+      setAiBriefing('AI 전술 분석을 불러오는 중 문제가 발생했습니다.');
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
   const toggleFavorite = async () => {
     if (!selectedTeam) return;
-    
     try {
       const response = await api.post('/mypage/favorites/teams', {
         team_id: selectedTeam.id,
@@ -128,11 +143,62 @@ export default function LeaguesPage() {
     }
   };
 
+  // 💡 [강화판] 모든 형태의 마크다운 기호를 잡아내는 파싱 함수
+  const renderAdvancedAiBriefing = (text: string) => {
+    const lines = text.split('\n');
+    return (
+      <div className="space-y-5">
+        {lines.map((line, idx) => {
+          const trimmedLine = line.trim();
+          if (!trimmedLine) return null;
+
+          // 1. 헤딩 처리: #, ##, ### 등 샵이 몇 개든 모두 감지
+          if (/^#+\s/.test(trimmedLine)) {
+            const headingText = trimmedLine.replace(/^#+\s*/, '').replace(/\*\*/g, '');
+            return (
+              <h4 key={idx} className="text-xl font-black text-[#141b26] mt-6 mb-3 flex items-center gap-2 border-b-2 border-gray-100 pb-2">
+                <span className="w-1.5 h-6 bg-[#41e307] rounded-full"></span>
+                {headingText}
+              </h4>
+            );
+          }
+
+          // 2. 리스트 처리: 숫자(1.), 별표(*), 빼기(-) 기호 모두 감지하여 예쁜 체크박스 카드로 변환
+          if (/^(\d+\.|[\*\-])\s/.test(trimmedLine)) {
+            const listContent = trimmedLine.replace(/^(\d+\.|[\*\-])\s*/, '');
+            const boldParsed = listContent.split(/(\*\*.*?\*\*)/g).map((part, i) => 
+              part.startsWith('**') ? <strong key={i} className="text-[#141b26] font-extrabold bg-[#41e307]/20 px-1.5 rounded">{part.slice(2, -2)}</strong> : <span key={i}>{part}</span>
+            );
+            return (
+              <div key={idx} className="flex gap-3 items-start bg-white p-4 rounded-2xl border border-gray-100 shadow-sm ml-2 hover:border-[#41e307] transition-colors">
+                <span className="flex-shrink-0 w-6 h-6 bg-[#141b26] text-[#41e307] rounded-full flex items-center justify-center font-bold text-sm mt-0.5">
+                  ✓
+                </span>
+                <p className="text-gray-700 leading-relaxed font-medium">{boldParsed}</p>
+              </div>
+            );
+          }
+
+          // 3. 일반 텍스트 내 강조(**) 처리
+          const boldParsed = trimmedLine.split(/(\*\*.*?\*\*)/g).map((part, i) => 
+            part.startsWith('**') ? <strong key={i} className="text-[#141b26] font-extrabold">{part.slice(2, -2)}</strong> : <span key={i}>{part}</span>
+          );
+
+          return (
+            <p key={idx} className="text-gray-600 leading-relaxed font-medium px-2">
+              {boldParsed}
+            </p>
+          );
+        })}
+      </div>
+    );
+  };
+
   return (
     <div className="bg-white rounded-[32px] p-8 shadow-sm border border-gray-100 min-h-[70vh] relative">
       
       {selectedTeam ? (
-        <div className="animate-fadeIn">
+        <div className="animate-fadeIn pb-10">
           <button
             onClick={() => setSelectedTeam(null)}
             className="mb-8 flex items-center gap-2 text-gray-400 hover:text-[#141b26] transition-colors font-bold"
@@ -226,6 +292,31 @@ export default function LeaguesPage() {
               </div>
             </div>
           </div>
+
+          <div className="mt-8 border-t-2 border-dashed border-gray-200 pt-8">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-2xl font-black text-[#141b26] flex items-center gap-3 tracking-tight">
+                <span className="text-3xl animate-bounce">🤖</span> Goalytics AI 전술 리포트
+              </h3>
+              {aiLoading && <span className="text-sm font-bold text-[#41e307] animate-pulse bg-[#141b26] px-3 py-1 rounded-full">분석 중...</span>}
+            </div>
+            
+            <div className="bg-gray-50 rounded-3xl p-8 border border-gray-100 shadow-inner">
+              {aiLoading ? (
+                <div className="flex flex-col items-center justify-center py-12 gap-5">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-[#141b26]"></div>
+                  <span className="text-gray-500 font-bold">최신 전술 데이터를 불러오고 있습니다...</span>
+                </div>
+              ) : (
+                <div className="w-full">
+                  {aiBriefing ? renderAdvancedAiBriefing(aiBriefing) : (
+                    <div className="text-center py-10 text-gray-400 font-bold">분석 결과를 불러올 수 없습니다.</div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+
         </div>
       ) : (
         <div className="animate-fadeIn">

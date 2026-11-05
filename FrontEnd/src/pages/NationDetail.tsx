@@ -12,6 +12,10 @@ export default function NationDetail() {
   
   const [isFavorite, setIsFavorite] = useState(false);
 
+  // 💡 AI 전술 브리핑 상태 관리
+  const [aiBriefing, setAiBriefing] = useState<string | null>(null);
+  const [aiLoading, setAiLoading] = useState(false);
+
   useEffect(() => {
     setLoading(true);
     axios.get(`http://localhost:3000/football/nations/${id}`)
@@ -40,7 +44,6 @@ export default function NationDetail() {
 
   useEffect(() => {
     if (team) {
-      // 💡 GET 요청 시 JWT 토큰 헤더 추가
       const token = localStorage.getItem('access_token');
       if (token) {
         axios.get('http://localhost:3000/mypage/favorites/nations', {
@@ -52,13 +55,28 @@ export default function NationDetail() {
           })
           .catch(console.error);
       }
+      
+      // 팀 정보를 성공적으로 불러온 후 AI 분석 요청
+      fetchAiBriefing(team.name);
     }
   }, [team]);
+
+  const fetchAiBriefing = async (teamName: string) => {
+    setAiLoading(true);
+    try {
+      const res = await axios.get(`http://localhost:3000/ai/tactics?team=${encodeURIComponent(teamName)}`);
+      setAiBriefing(res.data.briefing);
+    } catch (error) {
+      console.error('AI 분석 실패:', error);
+      setAiBriefing('AI 전술 분석을 불러오는 중 문제가 발생했습니다.');
+    } finally {
+      setAiLoading(false);
+    }
+  };
 
   const toggleFavorite = async () => {
     if (!team) return;
     
-    // 💡 로그인하지 않은 유저 차단 (선택적)
     const token = localStorage.getItem('access_token');
     if (!token) {
       alert('로그인이 필요한 기능입니다.');
@@ -66,7 +84,6 @@ export default function NationDetail() {
     }
 
     try {
-      // 💡 POST 요청 시 JWT 토큰 헤더 추가
       const response = await axios.post('http://localhost:3000/mypage/favorites/nations', {
         nation_id: team.id,
         nation_name: team.name,
@@ -78,6 +95,57 @@ export default function NationDetail() {
     } catch (error) {
       console.error('즐겨찾기 요청에 실패했습니다.', error);
     }
+  };
+
+  // 💡 [국가대표팀용 보라색 테마 적용] 고급 AI 마크다운 렌더링 헬퍼 함수
+  const renderAdvancedAiBriefing = (text: string) => {
+    const lines = text.split('\n');
+    return (
+      <div className="space-y-5">
+        {lines.map((line, idx) => {
+          const trimmedLine = line.trim();
+          if (!trimmedLine) return null;
+
+          // 1. 헤딩 처리: #, ##, ### 감지
+          if (/^#+\s/.test(trimmedLine)) {
+            const headingText = trimmedLine.replace(/^#+\s*/, '').replace(/\*\*/g, '');
+            return (
+              <h4 key={idx} className="text-xl font-black text-purple-900 mt-6 mb-3 flex items-center gap-2 border-b-2 border-purple-50 pb-2">
+                <span className="w-1.5 h-6 bg-purple-600 rounded-full"></span>
+                {headingText}
+              </h4>
+            );
+          }
+
+          // 2. 리스트 처리: 숫자(1.), 별표(*), 빼기(-) 기호 감지
+          if (/^(\d+\.|[\*\-])\s/.test(trimmedLine)) {
+            const listContent = trimmedLine.replace(/^(\d+\.|[\*\-])\s*/, '');
+            const boldParsed = listContent.split(/(\*\*.*?\*\*)/g).map((part, i) => 
+              part.startsWith('**') ? <strong key={i} className="text-purple-900 font-extrabold bg-purple-100 px-1.5 rounded">{part.slice(2, -2)}</strong> : <span key={i}>{part}</span>
+            );
+            return (
+              <div key={idx} className="flex gap-3 items-start bg-white p-4 rounded-2xl border border-purple-100 shadow-sm ml-2 hover:border-purple-300 transition-colors">
+                <span className="flex-shrink-0 w-6 h-6 bg-purple-100 text-purple-700 rounded-full flex items-center justify-center font-bold text-sm mt-0.5">
+                  ✓
+                </span>
+                <p className="text-gray-700 leading-relaxed font-medium">{boldParsed}</p>
+              </div>
+            );
+          }
+
+          // 3. 일반 텍스트 내 강조(**) 처리
+          const boldParsed = trimmedLine.split(/(\*\*.*?\*\*)/g).map((part, i) => 
+            part.startsWith('**') ? <strong key={i} className="text-purple-900 font-extrabold">{part.slice(2, -2)}</strong> : <span key={i}>{part}</span>
+          );
+
+          return (
+            <p key={idx} className="text-gray-600 leading-relaxed font-medium px-2">
+              {boldParsed}
+            </p>
+          );
+        })}
+      </div>
+    );
   };
 
   if (loading) return <div className="p-10 text-center font-bold text-gray-400">데이터 로딩 중...</div>;
@@ -196,6 +264,31 @@ export default function NationDetail() {
                     <span className="font-bold text-gray-800 text-lg">{honor}</span>
                   </div>
                 ))
+              )}
+            </div>
+          </div>
+
+          {/* 💡 AI 전술 브리핑 영역 (고급 렌더링 적용) */}
+          <div className="mt-8 border-t-2 border-dashed border-purple-200 pt-8">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-2xl font-black text-purple-900 flex items-center gap-3 tracking-tight">
+                <span className="text-3xl animate-bounce">🤖</span> Goalytics AI 전술 리포트
+              </h3>
+              {aiLoading && <span className="text-sm font-bold text-purple-700 animate-pulse bg-purple-100 px-3 py-1 rounded-full">분석 중...</span>}
+            </div>
+            
+            <div className="bg-gradient-to-br from-purple-50 to-white rounded-3xl shadow-sm p-8 border border-purple-100 relative overflow-hidden">
+              {aiLoading ? (
+                <div className="flex flex-col items-center justify-center py-10 gap-5">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-purple-600"></div>
+                  <span className="text-purple-700 font-bold animate-pulse text-lg">Goalytics AI가 {team.name}의 전술을 분석 중입니다...</span>
+                </div>
+              ) : (
+                <div className="w-full">
+                  {aiBriefing ? renderAdvancedAiBriefing(aiBriefing) : (
+                    <div className="text-center py-10 text-gray-400 font-bold">분석 결과를 불러올 수 없습니다.</div>
+                  )}
+                </div>
               )}
             </div>
           </div>
