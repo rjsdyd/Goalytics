@@ -10,6 +10,7 @@ import { MyPageModule } from './mypage/mypage.module.js'; // ✅ MyPageModule �
 import { InquiriesModule } from './inquiries/inquiries.module.js'; // 💡 문의함 모듈 추가
 import { UsersModule } from './users/users.module.js'; // 💡 유저 관리 모듈 추가
 import { AiModule } from './ai/ai.module.js'; // 💡 AI 전술 분석 및 매치업 모듈 추가
+import { MatchupModule } from './matchup/matchup.module.js';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { AiModule } from './ai/ai.module.js'; // 💡 AI 전술 분석 및 매�
     InquiriesModule, // 💡 추가: InquiriesModule 등록
     UsersModule, // 💡 추가: UsersModule 등록
     AiModule, // 💡 추가: AiModule 등록
+    MatchupModule,
   ],
   controllers: [],
   providers: [],

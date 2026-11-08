@@ -2,17 +2,21 @@
 import { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ModeContext } from '../App';
+import MatchupModal from './MatchupModal'; // 💡 매치업 모달 임포트
 
 export default function Header() {
   const { activeMode } = useContext(ModeContext);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [nickname, setNickname] = useState(''); 
-  const [role, setRole] = useState('user'); // 💡 유저 권한(role)을 저장할 상태 추가
+  const [role, setRole] = useState('user');
+
+  // 💡 매치업 모달 상태 관리
+  const [isMatchupOpen, setIsMatchupOpen] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('access_token');
     const storedNickname = localStorage.getItem('nickname'); 
-    const storedRole = localStorage.getItem('role'); // 💡 저장된 role 불러오기
+    const storedRole = localStorage.getItem('role');
 
     if (token) {
       setIsLoggedIn(true);
@@ -20,7 +24,7 @@ export default function Header() {
         setNickname(storedNickname);
       }
       if (storedRole) {
-        setRole(storedRole); // 💡 role 상태 업데이트
+        setRole(storedRole);
       }
     }
   }, []);
@@ -53,54 +57,67 @@ export default function Header() {
   };
 
   return (
-    <header className="flex justify-between items-center py-6 mb-4">
-      <Link 
-        to="/" 
-        className={`text-3xl font-black tracking-tight cursor-pointer transition-all duration-300 active:scale-95 ${hoverBrandColor}`}
-      >
-        Goal<span className={brandColor}>y</span>tics
-      </Link>
-      
-      <nav className="flex items-center gap-8 font-bold text-sm">
-        {/* 💡 권한(role)이 admin이면 관리자 페이지, 아니면 마이페이지 출력 */}
-        {isLoggedIn && (
-          role === 'admin' ? (
-            <Link to="/admin" className="text-gray-900 hover:opacity-70 transition">관리자 페이지</Link>
-          ) : (
-            <Link to="/mypage" className="text-gray-900 hover:opacity-70 transition">마이페이지</Link>
-          )
-        )}
+    <>
+      <header className="flex justify-between items-center py-6 mb-4">
+        <Link 
+          to="/" 
+          className={`text-3xl font-black tracking-tight cursor-pointer transition-all duration-300 active:scale-95 ${hoverBrandColor}`}
+        >
+          Goal<span className={brandColor}>y</span>tics
+        </Link>
         
-        <Link to="/" className="text-gray-900 hover:opacity-70 transition">Dashboard</Link>
-        
-        {activeMode === 'league' && (
-          <Link to="/leagues" className="text-gray-400 hover:text-gray-900 transition">Leagues</Link>
-        )}
-        {activeMode === 'national' && (
-          <Link to="/nations" className="text-gray-400 hover:text-gray-900 transition">국가</Link>
-        )}
-        
-        <div className="flex items-center gap-4 ml-6">
-          {isLoggedIn ? (
-            <>
-              <span className="text-gray-600">{nickname ? `${nickname}님 환영합니다!` : '환영합니다!'}</span>
-              <button 
-                onClick={handleLogout}
-                className={`${btnColor} px-5 py-2.5 rounded-full transition shadow-sm font-bold`}
-              >
-                로그아웃
-              </button>
-            </>
-          ) : (
-            <button 
-              onClick={() => window.location.replace('/login')}
-              className={`${btnColor} px-5 py-2.5 rounded-full transition shadow-sm font-bold`}
-            >
-              로그인
-            </button>
+        <nav className="flex items-center gap-8 font-bold text-sm">
+          {isLoggedIn && (
+            role === 'admin' ? (
+              <Link to="/admin" className="text-gray-900 hover:opacity-70 transition">관리자 페이지</Link>
+            ) : (
+              <Link to="/mypage" className="text-gray-900 hover:opacity-70 transition">마이페이지</Link>
+            )
           )}
-        </div>
-      </nav>
-    </header>
+          
+          {/* 💡 Dashboard 링크를 Matchup 모달 호출 버튼으로 교체 */}
+          <button 
+            onClick={() => setIsMatchupOpen(true)}
+            className={`flex items-center gap-1 transition-all ${isNational ? 'text-purple-600 hover:text-purple-800' : 'text-gray-900 hover:text-[#41e307]'}`}
+          >
+            <span className="text-lg">⚔️</span> Matchup
+          </button>
+          
+          {activeMode === 'league' && (
+            <Link to="/leagues" className="text-gray-400 hover:text-gray-900 transition">Leagues</Link>
+          )}
+          {activeMode === 'national' && (
+            <Link to="/nations" className="text-gray-400 hover:text-gray-900 transition">국가</Link>
+          )}
+          
+          <div className="flex items-center gap-4 ml-6">
+            {isLoggedIn ? (
+              <>
+                <span className="text-gray-600">{nickname ? `${nickname}님 환영합니다!` : '환영합니다!'}</span>
+                <button 
+                  onClick={handleLogout}
+                  className={`${btnColor} px-5 py-2.5 rounded-full transition shadow-sm font-bold hover:opacity-80`}
+                >
+                  로그아웃
+                </button>
+              </>
+            ) : (
+              <button 
+                onClick={() => window.location.replace('/login')}
+                className={`${btnColor} px-5 py-2.5 rounded-full transition shadow-sm font-bold hover:opacity-80`}
+              >
+                로그인
+              </button>
+            )}
+          </div>
+        </nav>
+      </header>
+
+      {/* 💡 모달 컴포넌트 마운트 */}
+      <MatchupModal 
+        isOpen={isMatchupOpen} 
+        onClose={() => setIsMatchupOpen(false)} 
+      />
+    </>
   );
 }
