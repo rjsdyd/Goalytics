@@ -1,7 +1,7 @@
 // src/App.tsx
 import { createContext, useState, useContext, useEffect } from 'react';
 import type { ReactNode } from 'react';
-import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation, Navigate, Link } from 'react-router-dom';
 import Header from './components/Header';
 import LiveMatch from './components/LiveMatch';
 import Standings from './components/History';
@@ -16,7 +16,9 @@ import NationalContent from './components/NationalContent';
 import Nations from './pages/Nations';
 import NationDetail from './pages/NationDetail';
 import MyPage from './components/Mypage';
-import AdminPage from './pages/AdminPage'; // 💡 관리자 페이지 import 추가
+import AdminPage from './pages/AdminPage';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsOfService from './pages/TermsOfService'; // 💡 이용약관 컴포넌트 임포트
 
 export const ModeContext = createContext<any>(null);
 
@@ -59,6 +61,21 @@ function Dashboard() {
           <MatchPredictions />
         </div>
       </div>
+
+      {/* 💡 푸터 (대시보드 최하단) */}
+      <footer className="mt-12 mb-6 px-4 flex flex-col items-center justify-center gap-2">
+        <div className="flex gap-6 text-sm font-bold text-gray-400">
+          <Link to="/privacy" className="hover:text-[#141b26] transition-colors">
+            개인정보처리방침
+          </Link>
+          <Link to="/terms" className="hover:text-[#141b26] transition-colors">
+            이용약관
+          </Link>
+        </div>
+        <p className="text-xs text-gray-400 font-medium mt-2">
+          © 2026 Goalytics. All rights reserved.
+        </p>
+      </footer>
     </div>
   );
 }
@@ -75,11 +92,13 @@ const ProtectedRoute = ({ children }: { children: ReactNode }) => {
 function AppLayout() {
   const location = useLocation();
   const isLoginPage = location.pathname === '/login';
+  const isPrivacyPage = location.pathname === '/privacy';
+  const isTermsPage = location.pathname === '/terms'; // 💡 이용약관 페이지 확인
 
   return (
     <div className="bg-gray-50 min-h-screen p-8 font-sans text-gray-800">
       <div className="max-w-[1200px] mx-auto">
-        {!isLoginPage && <Header />}
+        {(!isLoginPage && !isPrivacyPage && !isTermsPage) && <Header />} {/* 💡 헤더 숨김 조건 추가 */}
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route 
@@ -90,7 +109,6 @@ function AppLayout() {
               </ProtectedRoute>
             } 
           />
-          {/* 💡 관리자 페이지 라우팅 추가 (보호된 라우트로 설정) */}
           <Route 
             path="/admin" 
             element={
@@ -103,6 +121,10 @@ function AppLayout() {
           <Route path="/nations" element={<Nations />} />
           <Route path="/nations/:id" element={<NationDetail />} />
           <Route path="/login" element={<AuthPage />} />
+          
+          {/* 💡 하단 푸터 페이지 라우팅 */}
+          <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/terms" element={<TermsOfService />} />
         </Routes>
       </div>
     </div>
