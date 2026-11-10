@@ -8,6 +8,6 @@ import { UsersService } from './users.service.js';
   imports: [TypeOrmModule.forFeature([User])],
   controllers: [UsersController],
   providers: [UsersService],
-  exports: [UsersService], // 다른 모듈에서 필요할 경우를 대비해 export
+  exports: [UsersService],
 })
 export class UsersModule {}

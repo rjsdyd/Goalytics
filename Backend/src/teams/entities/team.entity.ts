@@ -29,11 +29,9 @@ export class Team {
   @Column({ type: 'text' })
   description: string;
 
-  // ✅ 역대 득점 순위를 저장할 JSON 컬럼 추가
   @Column({ type: 'json', nullable: true })
   topScorers: any;
 
-  // ✅ 역대 도움 순위를 저장할 JSON 컬럼 추가
   @Column({ type: 'json', nullable: true })
   topAssists: any;
 }

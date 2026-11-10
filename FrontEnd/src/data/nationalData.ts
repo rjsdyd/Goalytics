@@ -67,8 +67,6 @@ export const continentalCups = {
   ]
 };
 
-// src/data/nationalData.ts (하단 추가/수정)
-
 export const fifaRankings = [
   { rank: 1, name: '스페인', flag: 'es', pts: '2011.57' },
   { rank: 2, name: '아르헨티나', flag: 'ar', pts: '1972.80' },

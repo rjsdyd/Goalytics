@@ -1,4 +1,3 @@
-// src/pages/Nations.tsx
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -36,7 +35,6 @@ export default function Nations() {
       .finally(() => setLoading(false));
   }, [currentConfed]);
 
-  // 💡 데이터 로딩이 끝나면 저장된 스크롤 위치로 이동
   useEffect(() => {
     if (!loading) {
       const savedScroll = sessionStorage.getItem('goalytics_nations_scroll');
@@ -46,13 +44,11 @@ export default function Nations() {
     }
   }, [loading]);
 
-  // 💡 대륙 탭 클릭 시 스크롤 상단 초기화
   const handleTabClick = (confedId: string) => {
     setCurrentConfed(confedId);
     sessionStorage.setItem('goalytics_nations_scroll', '0');
   };
 
-  // 💡 국가 클릭 시 현재 스크롤 위치 저장 후 이동
   const handleNationClick = (teamId: string) => {
     sessionStorage.setItem('goalytics_nations_scroll', window.scrollY.toString());
     navigate(`/nations/${teamId}`);

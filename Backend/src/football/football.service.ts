@@ -11,8 +11,6 @@ import { Standing } from './entities/standing.entity.js';
 @Injectable()
 export class FootballService {
   private readonly logger = new Logger(FootballService.name);
-  
-  // 💡 API 호출 절약을 위한 메모리 캐시 저장소 (10분 유지)
   private fixtureCache: Map<string, { data: any[]; timestamp: number }> = new Map();
 
   constructor(
@@ -22,12 +20,10 @@ export class FootballService {
     @InjectRepository(Standing) private standingRepository: Repository<Standing>,
   ) {}
 
-  // API Rate Limit(429 에러) 방지를 위한 딜레이 함수
   private delay(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 
-  // 1. 리그(Leagues) 로직
   async fetchAndSaveLeagues() {
     try {
       const response = await firstValueFrom(
@@ -59,7 +55,6 @@ export class FootballService {
     return await this.leagueRepository.find();
   }
 
-  // 2. 실시간 경기(Fixtures) Cron 로직
   @Cron(CronExpression.EVERY_12_HOURS) 
   async fetchAndUpsertLiveFixtures() {
     this.logger.log('실시간 경기 데이터 동기화 시작...');
@@ -96,12 +91,10 @@ export class FootballService {
     return await this.fixtureRepository.find({ order: { match_date: 'ASC' } });
   }
 
-  // 💡 [캐싱 적용됨] 프론트엔드 요청 시 10분간 메모리에서 응답하여 API 사용량을 0회로 방어합니다.
   async getFixturesByDate(date?: string) {
     const targetDate = date || new Date().toLocaleDateString('en-CA');
     const now = Date.now();
 
-    // 캐시가 유효한 경우 외부 API를 호출하지 않고 즉시 반환
     if (this.fixtureCache.has(targetDate)) {
       const cached = this.fixtureCache.get(targetDate)!;
       if (now - cached.timestamp < 24 * 60 * 60 * 1000) {
@@ -179,7 +172,6 @@ export class FootballService {
         };
       });
 
-      // 결과를 캐시에 저장 (10분)
       this.fixtureCache.set(targetDate, { data: result, timestamp: now });
       return result;
 
@@ -189,7 +181,6 @@ export class FootballService {
     }
   }
 
-  // 3. 순위표(Standings) 로직 - 5대 리그 & 최근 3년(24, 23, 22) 최적화 및 딜레이 적용
   async fetchAndSaveStandings() {
     const targetSeasons = [2022, 2023, 2024]; 
     const targetLeagues = [39, 140, 135, 78, 61]; 
@@ -259,7 +250,6 @@ export class FootballService {
     });
   }
 
-  // 4. 실시간 외부 뉴스 API 연동 로직
   async getLatestNews() {
     try {
       const response = await firstValueFrom(

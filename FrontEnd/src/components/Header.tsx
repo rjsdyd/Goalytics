@@ -1,8 +1,7 @@
-// src/components/Header.tsx
 import { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ModeContext } from '../App';
-import MatchupModal from './MatchupModal'; // 💡 매치업 모달 임포트
+import MatchupModal from './MatchupModal';
 
 export default function Header() {
   const { activeMode } = useContext(ModeContext);
@@ -10,7 +9,6 @@ export default function Header() {
   const [nickname, setNickname] = useState(''); 
   const [role, setRole] = useState('user');
 
-  // 💡 매치업 모달 상태 관리
   const [isMatchupOpen, setIsMatchupOpen] = useState(false);
 
   useEffect(() => {
@@ -75,7 +73,6 @@ export default function Header() {
             )
           )}
           
-          {/* 💡 Dashboard 링크를 Matchup 모달 호출 버튼으로 교체 */}
           <button 
             onClick={() => setIsMatchupOpen(true)}
             className={`flex items-center gap-1 transition-all ${isNational ? 'text-purple-600 hover:text-purple-800' : 'text-gray-900 hover:text-[#41e307]'}`}
@@ -113,7 +110,6 @@ export default function Header() {
         </nav>
       </header>
 
-      {/* 💡 모달 컴포넌트 마운트 */}
       <MatchupModal 
         isOpen={isMatchupOpen} 
         onClose={() => setIsMatchupOpen(false)} 

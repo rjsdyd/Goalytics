@@ -1,5 +1,3 @@
-// src/data/nationsData.ts
-
 export interface Confederation {
   id: string;
   name: string;
@@ -13,7 +11,7 @@ export interface PlayerStat {
 }
 
 export interface NationalTeam {
-  id: string; // flagcdn에 사용될 국가 코드 (예: kr, ar, gb-eng)
+  id: string;
   name: string;
   confederation: string;
   manager: string;
@@ -24,7 +22,6 @@ export interface NationalTeam {
   honors: string[];
 }
 
-// 💡 각 대륙별 축구연맹 로고 (위키미디어 공용 SVG 활용)
 export const CONFEDERATIONS: Confederation[] = [
   { id: 'UEFA', name: '유럽 (UEFA)', logo: 'https://upload.wikimedia.org/wikipedia/commons/b/b8/UEFA_logo.svg' },
   { id: 'CONMEBOL', name: '남미 (CONMEBOL)', logo: 'https://upload.wikimedia.org/wikipedia/commons/c/c5/Logo_Conmebol.svg' },
@@ -34,7 +31,6 @@ export const CONFEDERATIONS: Confederation[] = [
 ];
 
 export const NATIONAL_TEAMS: NationalTeam[] = [
-// ================= [ AFC (아시아) - 30개국 (데이터 최신화 및 Top 3 꽉 채움) ] =================
   {
     id: 'kr', name: '대한민국', confederation: 'AFC', manager: '모레노', captain: '손흥민', description: '아시아 축구의 호랑이. 최근 모레노 감독 체제 하에 손흥민이 역대 A매치 최다 득점자에 등극했습니다.',
     topScorers: [{ rank: 1, name: '손흥민', stat: 60 }, { rank: 2, name: '차범근', stat: 58 }, { rank: 3, name: '황선홍', stat: 50 }],
@@ -185,8 +181,6 @@ export const NATIONAL_TEAMS: NationalTeam[] = [
     topScorers: [{ rank: 1, name: '판디 아흐마드', stat: 55 }, { rank: 2, name: '카이룰 암리', stat: 32 }, { rank: 3, name: '이크산 판디', stat: 18 }],
     topAssists: [{ rank: 1, name: '샤흐릴 이샥', stat: 14 }, { rank: 2, name: '사푸완 바하루딘', stat: 10 }, { rank: 3, name: '하리스 하룬', stat: 8 }], honors: ['AFF 미쓰비시전기컵 우승 4회']
   },
-
-// ================= [ UEFA (유럽) - 30개국 (최신 감독/주장 및 Top 3 완벽 반영) ] =================
   {
     id: 'fr', name: '프랑스', confederation: 'UEFA', manager: '디디에 데샹', captain: '킬리안 음바페', description: '레 블뢰. 압도적인 스쿼드를 자랑하며 월드컵 2회 우승에 빛나는 세계 최고의 팀입니다.',
     topScorers: [{ rank: 1, name: '올리비에 지루', stat: 57 }, { rank: 2, name: '티에리 앙리', stat: 51 }, { rank: 3, name: '킬리안 음바페', stat: 48 }],
@@ -337,7 +331,6 @@ export const NATIONAL_TEAMS: NationalTeam[] = [
     topScorers: [{ rank: 1, name: '에딘 제코', stat: 65 }, { rank: 2, name: '베다드 이비셰비치', stat: 28 }, { rank: 3, name: '즈베즈단 미시모비치', stat: 25 }],
     topAssists: [{ rank: 1, name: '미랄렘 퍄니치', stat: 29 }, { rank: 2, name: '즈베즈단 미시모비치', stat: 23 }, { rank: 3, name: '에딘 제코', stat: 22 }], honors: ['없음']
   },
-  // ================= [ CONMEBOL (남미) - 10개국 전체 (최신 감독/주장 및 Top 3 완벽 반영) ] =================
   {
     id: 'ar', name: '아르헨티나', confederation: 'CONMEBOL', manager: '리오넬 스칼로니', captain: '리오넬 메시', description: '라 알비셀레스테. 카타르 월드컵과 코파 아메리카 연속 우승으로 황금기를 구가하고 있습니다.',
     topScorers: [{ rank: 1, name: '리오넬 메시', stat: 109 }, { rank: 2, name: '가브리엘 바티스투타', stat: 56 }, { rank: 3, name: '세르히오 아구에로', stat: 41 }],
@@ -388,8 +381,6 @@ export const NATIONAL_TEAMS: NationalTeam[] = [
     topScorers: [{ rank: 1, name: '마르셀로 모레노', stat: 31 }, { rank: 2, name: '호아킨 보테로', stat: 20 }, { rank: 3, name: '빅토르 우고 안테로', stat: 20 }],
     topAssists: [{ rank: 1, name: '에르윈 산체스', stat: 15 }, { rank: 2, name: '훌리오 세자르 발디비에소', stat: 12 }, { rank: 3, name: '마르셀로 모레노', stat: 8 }], honors: ['코파 아메리카 우승 1회']
   },
-
- // ================= [ CONCACAF (북중미) - 30개국 (최신 감독/주장 및 Top 3 완벽 반영) ] =================
   {
     id: 'us', name: '미국', confederation: 'CONCACAF', manager: '마우리시오 포체티노', captain: '크리스티안 풀리식', description: '양키스. 포체티노 감독 부임 이후 자국에서 열리는 2026 월드컵 돌풍을 준비 중입니다.',
     topScorers: [{ rank: 1, name: '클린트 뎀프시', stat: 57 }, { rank: 2, name: '랜던 도노반', stat: 57 }, { rank: 3, name: '조지 알티도어', stat: 42 }],
@@ -540,8 +531,6 @@ export const NATIONAL_TEAMS: NationalTeam[] = [
     topScorers: [{ rank: 1, name: '줄리언 웨이드', stat: 20 }, { rank: 2, name: '컬슨 벤자민', stat: 14 }, { rank: 3, name: '켈리 피터스', stat: 9 }],
     topAssists: [{ rank: 1, name: '켈릭슨 토마스', stat: 4 }, { rank: 2, name: '브리엘 토마스', stat: 3 }, { rank: 3, name: '채드 버트란드', stat: 3 }], honors: ['없음']
   },
-
-// ================= [ CAF (아프리카) - 30개국 (최신 감독/주장 및 Top 3 완벽 반영) ] =================
   {
     id: 'sn', name: '세네갈', confederation: 'CAF', manager: '알리우 시세', captain: '칼리두 쿨리발리', description: '테란가의 사자들. 공수 밸런스가 완벽에 가까운 현재 아프리카 축구의 상징이자 강호입니다.',
     topScorers: [{ rank: 1, name: '사디오 마네', stat: 43 }, { rank: 2, name: '앙리 카마라', stat: 29 }, { rank: 3, name: '엘 하지 디우프', stat: 24 }],

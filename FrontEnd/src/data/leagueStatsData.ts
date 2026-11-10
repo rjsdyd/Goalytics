@@ -1,5 +1,3 @@
-// src/data/leagueStatsData.ts
-
 export const STATS_DATA = {
   ALL: {
     name: 'All Leagues',

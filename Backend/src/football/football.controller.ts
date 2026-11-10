@@ -20,20 +20,17 @@ export class FootballController {
     return await this.footballService.getFixturesByDate(date);
   }
 
-  // 브라우저에서 이 주소로 접속하면 5년치 데이터를 긁어옵니다. (시간이 조금 걸릴 수 있습니다)
   @Get('standings/sync')
   async syncStandings() {
     return await this.footballService.fetchAndSaveStandings();
   }
 
-  // 대시보드 메인 화면용 (최신 2024 시즌 상위 6팀 등)
   @Get('standings/latest')
   async getLatestStandings() {
     return await this.footballService.getLatestStandings();
   }
   
 
-  // 모달 창용 (특정 연도/리그 요청 시 해당 순위 반환)
   @Get('standings/history')
   async getHistoryStandings(
     @Query('season') season: number,

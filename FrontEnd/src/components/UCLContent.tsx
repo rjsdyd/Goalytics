@@ -1,4 +1,3 @@
-// src/components/UCLContent.tsx
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { uclWinnersHistory, uclTopScorers, uclTopAssists, uclMvps } from '../data/uclData';
@@ -18,7 +17,6 @@ export default function UCLContent() {
     <>
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
-        {/* 1. 역대 우승팀 카드 */}
         <div className="lg:col-span-5 bg-blue-900 text-white rounded-[32px] p-6 shadow-md h-[420px] flex flex-col relative overflow-hidden">
           <div className="absolute top-[-20%] right-[-10%] text-[150px] opacity-10 pointer-events-none">⭐</div>
           
@@ -44,7 +42,6 @@ export default function UCLContent() {
           </button>
         </div>
 
-        {/* 2. 역대 득점/도움 순위 카드 */}
         <div className="lg:col-span-4 bg-white rounded-[32px] p-6 shadow-sm h-[420px] flex flex-col border-t-[10px] border-blue-900 relative">
           <div className="flex justify-between items-start">
             <h3 className="text-lg font-bold text-gray-800">UCL Top Scorer</h3>
@@ -64,7 +61,6 @@ export default function UCLContent() {
           </button>
         </div>
 
-        {/* 3. 연도별 MVP 카드 */}
         <div className="lg:col-span-3 bg-white rounded-[32px] p-6 shadow-sm h-[420px] flex flex-col border-t-[10px] border-blue-900">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-xl font-black text-blue-900 tracking-wide">🏅 연도별 MVP</h3>
@@ -94,7 +90,6 @@ export default function UCLContent() {
 
       </div>
 
-      {/* 💡 모달 1. 역대 우승팀 (화이트 테마로 변경됨) --- */}
       {isWinnerModalOpen && createPortal(
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-center justify-center p-4" onClick={() => setIsWinnerModalOpen(false)}>
           <div className="bg-white text-gray-900 w-full max-w-2xl rounded-[32px] p-6 shadow-2xl max-h-[85vh] flex flex-col relative" onClick={e => e.stopPropagation()}>
@@ -115,7 +110,6 @@ export default function UCLContent() {
         document.body
       )}
 
-      {/* --- 모달 2. 역대 득점/도움 순위 Top 20 (기존 화이트 테마) --- */}
       {isStatsModalOpen && createPortal(
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex justify-center items-center p-4" onClick={() => setIsStatsModalOpen(false)}>
           <div className="bg-white text-gray-900 w-full max-w-2xl rounded-[32px] p-6 shadow-2xl max-h-[85vh] flex flex-col relative" onClick={(e) => e.stopPropagation()}>
@@ -160,7 +154,6 @@ export default function UCLContent() {
         document.body
       )}
 
-      {/* 💡 모달 3. 연도별 MVP (화이트 테마로 변경됨) --- */}
       {isMvpModalOpen && createPortal(
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-center justify-center p-4" onClick={() => setIsMvpModalOpen(false)}>
           <div className="bg-white text-gray-900 w-full max-w-2xl rounded-[32px] p-6 shadow-2xl max-h-[85vh] flex flex-col relative" onClick={e => e.stopPropagation()}>

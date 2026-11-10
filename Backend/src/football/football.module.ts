@@ -8,7 +8,6 @@ import { Fixture } from './entities/fixture.entity.js';
 import { Standing } from './entities/standing.entity.js'; // 추가
 
 @Module({
-  // TypeOrmModule.forFeature 배열에 Standing을 추가합니다.
   imports: [
     TypeOrmModule.forFeature([League, Fixture, Standing]),
     HttpModule,

@@ -1,7 +1,5 @@
-// src/components/MiniStats.tsx
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
-// 💡 새롭게 분리한 데이터 파일에서 상수들을 가져옵니다.
 import { STATS_DATA, LEAGUE_KEYS } from '../data/leagueStatsData';
 import type { LeagueKey } from '../data/leagueStatsData';
 

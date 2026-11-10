@@ -1,4 +1,3 @@
-// src/components/MyPage.tsx
 import { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -12,7 +11,6 @@ export default function MyPage() {
   const [favoriteNations, setFavoriteNations] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // 💡 문의하기 모달 상태 관리
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [inquiryCategory, setInquiryCategory] = useState('[팀 추가 요청]');
   const [inquiryContent, setInquiryContent] = useState('');
@@ -72,7 +70,6 @@ export default function MyPage() {
     }
   };
 
-  // 💡 문의 제출 함수
   const handleInquirySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const token = localStorage.getItem('access_token');
@@ -146,7 +143,6 @@ export default function MyPage() {
         </div>
         
         <div className="flex gap-3">
-          {/* 💡 문의하기 버튼 추가 */}
           <button 
             onClick={() => setIsModalOpen(true)}
             className="text-sm font-bold text-[#141b26] bg-[#41e307] hover:opacity-80 px-5 py-2.5 rounded-xl transition-opacity shadow-sm"
@@ -229,7 +225,6 @@ export default function MyPage() {
         </div>
       </div>
 
-      {/* 💡 문의하기 모달 (Modal) 컴포넌트: 배경을 흰색 반투명으로 수정 */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-white bg-opacity-80 backdrop-blur-sm">
           <div className="bg-white p-8 rounded-3xl shadow-xl w-full max-w-md border border-gray-200 animate-fadeIn">

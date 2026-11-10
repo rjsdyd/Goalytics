@@ -1,4 +1,3 @@
-// src/pages/AdminPage.tsx
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -86,7 +85,6 @@ export default function AdminPage() {
     }
   };
 
-  // 💡 유저 권한(승급/강등) 변경 함수
   const handleUpdateRole = async (id: number, currentRole: string) => {
     const newRole = currentRole === 'admin' ? 'user' : 'admin';
     const actionText = currentRole === 'admin' ? '일반 유저로 강등' : '관리자로 승급';
@@ -242,7 +240,6 @@ export default function AdminPage() {
                       </div>
                     </div>
                     
-                    {/* 💡 승급/강등 및 삭제 버튼 영역 */}
                     <div className="flex gap-2">
                       <button 
                         onClick={() => handleUpdateRole(user.id, user.role)}

@@ -1,4 +1,3 @@
-// src/pages/LeaguesPage.tsx
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -39,7 +38,6 @@ export default function LeaguesPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
 
-  // 💡 AI 전술 브리핑 상태 관리
   const [aiBriefing, setAiBriefing] = useState<string | null>(null);
   const [aiLoading, setAiLoading] = useState(false);
 
@@ -143,7 +141,6 @@ export default function LeaguesPage() {
     }
   };
 
-  // 💡 [강화판] 모든 형태의 마크다운 기호를 잡아내는 파싱 함수
   const renderAdvancedAiBriefing = (text: string) => {
     const lines = text.split('\n');
     return (
@@ -163,7 +160,6 @@ export default function LeaguesPage() {
             );
           }
 
-          // 2. 리스트 처리: 숫자(1.), 별표(*), 빼기(-) 기호 모두 감지하여 예쁜 체크박스 카드로 변환
           if (/^(\d+\.|[\*\-])\s/.test(trimmedLine)) {
             const listContent = trimmedLine.replace(/^(\d+\.|[\*\-])\s*/, '');
             const boldParsed = listContent.split(/(\*\*.*?\*\*)/g).map((part, i) => 
@@ -179,7 +175,6 @@ export default function LeaguesPage() {
             );
           }
 
-          // 3. 일반 텍스트 내 강조(**) 처리
           const boldParsed = trimmedLine.split(/(\*\*.*?\*\*)/g).map((part, i) => 
             part.startsWith('**') ? <strong key={i} className="text-[#141b26] font-extrabold">{part.slice(2, -2)}</strong> : <span key={i}>{part}</span>
           );

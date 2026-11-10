@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { createPortal } from 'react-dom'; // 💡 추가됨
+import { createPortal } from 'react-dom';
 import axios from 'axios';
 
 interface StandingData {
@@ -96,15 +96,14 @@ export default function Standings() {
         </button>
       </div>
 
-      {/* 💡 createPortal을 사용하여 모달을 document.body로 이동 */}
       {isModalOpen && createPortal(
         <div 
           className="fixed inset-0 bg-black/50 flex justify-center items-center z-[9999] p-4"
-          onClick={() => setIsModalOpen(false)} // 💡 배경 클릭 시 닫기
+          onClick={() => setIsModalOpen(false)}
         >
           <div 
             className="bg-white rounded-[32px] w-full max-w-2xl h-[80vh] flex flex-col overflow-hidden shadow-2xl"
-            onClick={(e) => e.stopPropagation()} // 💡 모달 내부 클릭 시 닫힘 방지
+            onClick={(e) => e.stopPropagation()}
           >
             
             <div className="p-6 border-b border-gray-100 flex flex-col gap-4">
@@ -178,7 +177,7 @@ export default function Standings() {
             
           </div>
         </div>,
-        document.body // 💡 렌더링 위치를 body로 변경
+        document.body
       )}
     </>
   );

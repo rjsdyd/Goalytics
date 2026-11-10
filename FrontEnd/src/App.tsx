@@ -1,4 +1,3 @@
-// src/App.tsx
 import { createContext, useState, useContext, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { BrowserRouter, Routes, Route, useLocation, Navigate, Link } from 'react-router-dom';
@@ -18,7 +17,7 @@ import NationDetail from './pages/NationDetail';
 import MyPage from './components/Mypage';
 import AdminPage from './pages/AdminPage';
 import PrivacyPolicy from './pages/PrivacyPolicy';
-import TermsOfService from './pages/TermsOfService'; // 💡 이용약관 컴포넌트 임포트
+import TermsOfService from './pages/TermsOfService';
 
 export const ModeContext = createContext<any>(null);
 
@@ -62,7 +61,6 @@ function Dashboard() {
         </div>
       </div>
 
-      {/* 💡 푸터 (대시보드 최하단) */}
       <footer className="mt-12 mb-6 px-4 flex flex-col items-center justify-center gap-2">
         <div className="flex gap-6 text-sm font-bold text-gray-400">
           <Link to="/privacy" className="hover:text-[#141b26] transition-colors">
@@ -93,12 +91,12 @@ function AppLayout() {
   const location = useLocation();
   const isLoginPage = location.pathname === '/login';
   const isPrivacyPage = location.pathname === '/privacy';
-  const isTermsPage = location.pathname === '/terms'; // 💡 이용약관 페이지 확인
+  const isTermsPage = location.pathname === '/terms';
 
   return (
     <div className="bg-gray-50 min-h-screen p-8 font-sans text-gray-800">
       <div className="max-w-[1200px] mx-auto">
-        {(!isLoginPage && !isPrivacyPage && !isTermsPage) && <Header />} {/* 💡 헤더 숨김 조건 추가 */}
+        {(!isLoginPage && !isPrivacyPage && !isTermsPage) && <Header />}
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route 
@@ -122,7 +120,6 @@ function AppLayout() {
           <Route path="/nations/:id" element={<NationDetail />} />
           <Route path="/login" element={<AuthPage />} />
           
-          {/* 💡 하단 푸터 페이지 라우팅 */}
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/terms" element={<TermsOfService />} />
         </Routes>

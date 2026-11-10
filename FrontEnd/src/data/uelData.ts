@@ -1,5 +1,3 @@
-// src/data/uelData.ts
-
 export const uelWinnersHistory = [
   { year: '25/26', team: '아스톤 빌라 FC' },
   { year: '24/25', team: '토트넘 홋스퍼 FC' },
@@ -78,7 +76,6 @@ export const uelTopAssists = [
   { rank: 20, name: '하칸 찰하놀루', stat: 7 },
 ];
 
-// UEL 올해의 선수는 16/17 시즌부터 제정됨
 export const uelMvps = [
   { year: '25/26', name: '모건 로저스', team: '아스톤 빌라 FC' },
   { year: '24/25', name: '크리스티안 로메로', team: '토트넘 홋스퍼 FC' },

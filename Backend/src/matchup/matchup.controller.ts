@@ -1,4 +1,3 @@
-// src/matchup/matchup.controller.ts
 import { Controller, Get, Query } from '@nestjs/common';
 import { MatchupService } from './matchup.service.js';
 
@@ -10,7 +9,7 @@ export class MatchupController {
   async getMatchup(
     @Query('teamA') teamA: string,
     @Query('teamB') teamB: string,
-    @Query('category') category: string, // 'league' 또는 'nation'
+    @Query('category') category: string,
   ) {
     return this.matchupService.getSimulation(teamA, teamB, category);
   }

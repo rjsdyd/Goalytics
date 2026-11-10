@@ -5,7 +5,6 @@ import { InquiriesService } from './inquiries.service.js';
 export class InquiriesController {
   constructor(private readonly inquiriesService: InquiriesService) {}
 
-  // 💡 JWT 토큰 디코딩 및 페이로드 추출 헬퍼 함수
   private extractTokenPayload(authHeader: string) {
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       throw new UnauthorizedException('로그인 토큰이 없습니다.');
@@ -20,26 +19,22 @@ export class InquiriesController {
     }
   }
 
-  // API: 유저가 문의 작성
   @Post()
   createInquiry(@Headers('authorization') authHeader: string, @Body() body: { title: string, content: string }) {
     const payload = this.extractTokenPayload(authHeader);
     return this.inquiriesService.createInquiry(payload.sub, body.title, body.content);
   }
 
-  // API: 관리자가 모든 문의 조회
   @Get()
   getAllInquiries(@Headers('authorization') authHeader: string) {
     const payload = this.extractTokenPayload(authHeader);
     
-    // 💡 관리자가 아니면 조회 차단
     if (payload.role !== 'admin') {
       throw new UnauthorizedException('관리자 권한이 필요합니다.');
     }
     return this.inquiriesService.getAllInquiries();
   }
 
-  // API: 관리자가 문의 상태 변경 (예: 답변 완료)
   @Patch(':id/status')
   updateStatus(
     @Headers('authorization') authHeader: string, 
@@ -48,7 +43,6 @@ export class InquiriesController {
   ) {
     const payload = this.extractTokenPayload(authHeader);
     
-    // 💡 관리자가 아니면 상태 변경 차단
     if (payload.role !== 'admin') {
       throw new UnauthorizedException('관리자 권한이 필요합니다.');
     }

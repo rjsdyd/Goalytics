@@ -1,14 +1,12 @@
 import { useContext } from 'react';
 import { ModeContext } from '../App';
 
-// API-Sports의 공식 로고 URL을 직접 사용하여 API 호출 횟수를 아낍니다.
 const UCL_LOGO = "https://media.api-sports.io/football/leagues/2.png";
 const UEL_LOGO = "https://media.api-sports.io/football/leagues/3.png";
 
 export default function ModeSelector() {
   const { activeMode, setActiveMode } = useContext(ModeContext);
 
-  // 흰색 배경에 맞게 텍스트, 테두리, 호버 색상 최적화
   const modes = [
     {
       id: 'league',
@@ -45,11 +43,9 @@ export default function ModeSelector() {
   ];
 
   return (
-    // 💡 w-full 추가로 가로를 끝까지 채우고, bg-white로 배경색 변경
     <div className="w-full bg-white rounded-[32px] p-6 shadow-sm flex flex-col h-full justify-between">
       
       <div className="mb-4">
-        {/* 텍스트 색상을 다크모드에서 라이트모드용으로 변경 */}
         <h2 className="text-xl font-bold text-gray-900">Select Dashboard Mode</h2>
       </div>
 
@@ -67,7 +63,6 @@ export default function ModeSelector() {
                   : `bg-white border-gray-100 text-gray-400 ${mode.hoverColor}`
               }`}
             >
-              {/* 비활성화 상태일 때 로고를 흑백(grayscale) 및 반투명 처리하여 세련되게 표현 */}
               <div className={`mb-2 transition-all duration-300 ${isActive ? 'scale-110' : 'opacity-40 grayscale'}`}>
                 {mode.icon}
               </div>

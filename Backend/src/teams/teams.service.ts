@@ -35,7 +35,6 @@ async onModuleInit() {
 
     if (!fdApiKey || !apiFApiKey) return;
 
-    // 💡 여기에 원하는 팀의 약자(TLA)를 키값으로 역대 기록을 계속 추가해 나가시면 됩니다!
     const manualStats: Record<string, any> = {
       'BOU': {
         scorers: [
@@ -1590,7 +1589,6 @@ async onModuleInit() {
             stadiumImage: matchedApiFTeam?.venue?.image || '', 
             manager: fdTeam.coach?.name || 'Unknown',
             description: `${fdTeam.name}은(는) ${comp.name}의 프로 축구 구단입니다. 홈 구장은 ${fdTeam.venue || 'Unknown'}입니다.`,
-            // ✅ 위에서 작성한 manualStats 사전에서 해당 팀의 데이터를 찾아 병합! 없으면 빈 배열 []
             topScorers: manualStats[teamId]?.scorers || [],
             topAssists: manualStats[teamId]?.assists || [],
           };
@@ -1600,7 +1598,7 @@ async onModuleInit() {
         this.logger.log(`${league.code} 리그 팀 저장 및 수동 데이터 병합 완료!`);
         
       } catch (error: any) {
-         this.logger.error(`${league.code} API 호출 실패:`, error.message);
+        this.logger.error(`${league.code} API 호출 실패:`, error.message);
       } finally {
         await new Promise(resolve => setTimeout(resolve, 8000));
       }

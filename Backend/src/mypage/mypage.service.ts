@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User } from '../users/entities/user.entity.js'; // 💡 올바른 User 엔티티 경로
+import { User } from '../users/entities/user.entity.js';
 import { FavoriteTeam, FavoriteNation } from './entities/mypage.entity.js';
 
 @Injectable()

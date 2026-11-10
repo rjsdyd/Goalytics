@@ -1,4 +1,3 @@
-// src/matchup/matchup.service.ts
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -27,11 +26,9 @@ export class MatchupService {
       throw new BadRequestException('동일한 팀은 대결할 수 없습니다.');
     }
 
-    // 💡 1. 핵심 캐싱 로직: A vs B와 B vs A를 동일하게 취급하기 위해 알파벳/가나다순 정렬
     const sortedTeams = [teamA, teamB].sort();
     const matchupKey = `${category}_${sortedTeams[0]}_${sortedTeams[1]}`.replace(/\s+/g, '');
 
-    // 2. DB 캐시 확인
     const existingMatchup = await this.matchupRepo.findOne({
       where: { matchup_key: matchupKey },
     });
@@ -43,7 +40,6 @@ export class MatchupService {
 
     console.log(`[Matchup Cache Miss] ${matchupKey} - Gemini API 호출`);
 
-    // 3. 캐시 미스 시 AI 호출
     try {
       const model = this.genAI.getGenerativeModel({ model: 'gemini-3.5-flash' });
 
@@ -68,7 +64,6 @@ export class MatchupService {
       const response = await result.response;
       const text = response.text();
 
-      // 4. 성공 시 DB 저장
       const newMatchup = this.matchupRepo.create({
         category,
         matchup_key: matchupKey,

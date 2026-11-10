@@ -1,5 +1,3 @@
-// src/data/uclData.ts
-
 export const uclWinnersHistory = [
   { year: '25/26', team: '파리 생제르맹 FC' },
   { year: '24/25', team: '파리 생제르맹 FC' },
@@ -60,7 +58,6 @@ export const uclTopScorers = [
   { rank: 20, name: '엘링 홀란드', stat: 35 },
 ];
 
-// 💡 챔스 역대 도움 Top 20 추가
 export const uclTopAssists = [
   { rank: 1, name: '크리스티아누 호날두', stat: 42 },
   { rank: 2, name: '라이언 긱스', stat: 41 },

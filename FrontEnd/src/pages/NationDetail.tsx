@@ -1,4 +1,3 @@
-// src/pages/NationDetail.tsx
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -12,7 +11,6 @@ export default function NationDetail() {
   
   const [isFavorite, setIsFavorite] = useState(false);
 
-  // 💡 AI 전술 브리핑 상태 관리
   const [aiBriefing, setAiBriefing] = useState<string | null>(null);
   const [aiLoading, setAiLoading] = useState(false);
 
@@ -56,7 +54,6 @@ export default function NationDetail() {
           .catch(console.error);
       }
       
-      // 팀 정보를 성공적으로 불러온 후 AI 분석 요청
       fetchAiBriefing(team.name);
     }
   }, [team]);
@@ -97,7 +94,6 @@ export default function NationDetail() {
     }
   };
 
-  // 💡 [국가대표팀용 보라색 테마 적용] 고급 AI 마크다운 렌더링 헬퍼 함수
   const renderAdvancedAiBriefing = (text: string) => {
     const lines = text.split('\n');
     return (
@@ -106,7 +102,6 @@ export default function NationDetail() {
           const trimmedLine = line.trim();
           if (!trimmedLine) return null;
 
-          // 1. 헤딩 처리: #, ##, ### 감지
           if (/^#+\s/.test(trimmedLine)) {
             const headingText = trimmedLine.replace(/^#+\s*/, '').replace(/\*\*/g, '');
             return (
@@ -117,7 +112,6 @@ export default function NationDetail() {
             );
           }
 
-          // 2. 리스트 처리: 숫자(1.), 별표(*), 빼기(-) 기호 감지
           if (/^(\d+\.|[\*\-])\s/.test(trimmedLine)) {
             const listContent = trimmedLine.replace(/^(\d+\.|[\*\-])\s*/, '');
             const boldParsed = listContent.split(/(\*\*.*?\*\*)/g).map((part, i) => 
@@ -133,7 +127,6 @@ export default function NationDetail() {
             );
           }
 
-          // 3. 일반 텍스트 내 강조(**) 처리
           const boldParsed = trimmedLine.split(/(\*\*.*?\*\*)/g).map((part, i) => 
             part.startsWith('**') ? <strong key={i} className="text-purple-900 font-extrabold">{part.slice(2, -2)}</strong> : <span key={i}>{part}</span>
           );
@@ -268,7 +261,6 @@ export default function NationDetail() {
             </div>
           </div>
 
-          {/* 💡 AI 전술 브리핑 영역 (고급 렌더링 적용) */}
           <div className="mt-8 border-t-2 border-dashed border-purple-200 pt-8">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-2xl font-black text-purple-900 flex items-center gap-3 tracking-tight">

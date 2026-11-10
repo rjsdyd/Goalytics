@@ -1,6 +1,6 @@
 import { Entity, PrimaryColumn, Column } from 'typeorm';
 
-@Entity('v2_leagues') // ✅ 충돌 방지를 위해 v2 테이블로 새로 생성
+@Entity('v2_leagues')
 export class League {
   @PrimaryColumn()
   id: string;

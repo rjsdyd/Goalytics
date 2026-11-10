@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom'; // 💡 메인 이동을 위해 Link 추가
+import { Link } from 'react-router-dom';
 
 export default function AuthPage() {
   const [isLoginMode, setIsLoginMode] = useState(true);
@@ -20,11 +20,9 @@ export default function AuthPage() {
           password,
         });
 
-        // 💡 로그인 전 기존 토큰 및 데이터 완벽 초기화 후 새 정보 저장
         localStorage.clear();
         localStorage.setItem('access_token', response.data.access_token);
         localStorage.setItem('nickname', response.data.nickname);
-        // 💡 추가된 부분: 백엔드에서 전달받은 권한(role) 정보를 로컬 스토리지에 저장
         localStorage.setItem('role', response.data.role);
 
         alert('로그인 성공!');
@@ -50,7 +48,6 @@ export default function AuthPage() {
     <div className="flex justify-center items-center h-[70vh]">
       <div className="bg-white p-10 rounded-[32px] shadow-sm border border-gray-100 w-full max-w-md flex flex-col items-center">
         
-        {/* 💡 기존 텍스트를 지우고 Link 컴포넌트로 변경하여 클릭 시 "/" 로 이동하도록 수정 */}
         <Link 
           to="/" 
           className="text-3xl font-black mb-2 tracking-tight text-[#141b26] cursor-pointer hover:opacity-80 transition"

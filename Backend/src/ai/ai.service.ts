@@ -1,5 +1,4 @@
-// src/ai/ai.service.ts
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -8,35 +7,33 @@ import { AiBriefing } from './entities/ai-briefing.entity.js';
 
 @Injectable()
 export class AiService {
-  private genAI: GoogleGenerativeAI;
+  private readonly logger = new Logger(AiService.name);
+  private readonly genAI: GoogleGenerativeAI;
 
   constructor(
-    private configService: ConfigService,
-    // 💡 저장소(Repository) 주입
+    private readonly configService: ConfigService,
     @InjectRepository(AiBriefing)
-    private aiBriefingRepo: Repository<AiBriefing>,
+    private readonly aiBriefingRepo: Repository<AiBriefing>,
   ) {
-    const apiKey = this.configService.get<string>('GEMINI_API_KEY') || '';
+    const apiKey = this.configService.get<string>('GEMINI_API_KEY');
+    
+    // 보안/안정성: API 키 누락 시 앱 구동을 중단시켜 Fail-Fast 적용
     if (!apiKey) {
-      console.error('GEMINI_API_KEY가 설정되지 않았습니다. .env 파일을 확인해주세요.');
+      throw new Error('GEMINI_API_KEY가 설정되지 않았습니다. .env 파일을 확인해주세요.');
     }
     this.genAI = new GoogleGenerativeAI(apiKey);
   }
 
   async getTacticalBriefing(teamName: string) {
-    // 1. DB에 이미 분석된 데이터가 있는지 확인 (캐시 히트)
+    // 온디맨드 캐싱: DB에 기존 분석 결과가 있으면 API 호출 없이 즉시 반환
     const existingBriefing = await this.aiBriefingRepo.findOne({
       where: { team_name: teamName },
     });
 
     if (existingBriefing) {
-      console.log(`[AI Cache Hit] ${teamName} - DB에서 바로 불러옵니다.`);
       return { briefing: existingBriefing.briefing_text };
     }
-
-    console.log(`[AI Cache Miss] ${teamName} - Gemini API를 새로 호출합니다.`);
     
-    // 2. DB에 없으면 Gemini API 호출 (캐시 미스)
     try {
       const model = this.genAI.getGenerativeModel({ model: 'gemini-3.5-flash' });
 
@@ -48,10 +45,8 @@ export class AiService {
       `;
 
       const result = await model.generateContent(prompt);
-      const response = await result.response;
-      const text = response.text();
+      const text = result.response.text();
 
-      // 3. API에서 성공적으로 받아온 결과를 DB에 저장
       const newBriefing = this.aiBriefingRepo.create({
         team_name: teamName,
         briefing_text: text,
@@ -60,8 +55,9 @@ export class AiService {
 
       return { briefing: text };
     } catch (error: any) {
-      console.error('Gemini API 호출 에러:', error);
+      this.logger.error(`Gemini API 호출 에러 (${teamName}):`, error.message);
       
+      // 보안: 외부로 민감한 에러 스택을 노출하지 않고 정제된 메시지만 반환
       if (error?.status === 429 || error?.message?.includes('429')) {
         return { briefing: '현재 AI 전술 분석 요청이 많아 일시적으로 지연되고 있습니다. 잠시 후 다시 시도해 주세요.' };
       }

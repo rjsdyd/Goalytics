@@ -1,4 +1,3 @@
-// src/ai/ai.module.ts
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -9,7 +8,7 @@ import { AiBriefing } from './entities/ai-briefing.entity.js';
 @Module({
   imports: [
     ConfigModule,
-    TypeOrmModule.forFeature([AiBriefing]), // 💡 DB 캐싱 엔티티 등록
+    TypeOrmModule.forFeature([AiBriefing]),
   ],
   controllers: [AiController],
   providers: [AiService],

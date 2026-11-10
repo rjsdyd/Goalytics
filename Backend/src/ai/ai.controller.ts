@@ -5,13 +5,13 @@ import { AiService } from './ai.service.js';
 export class AiController {
   constructor(private readonly aiService: AiService) {}
 
-  // API: GET /ai/tactics?team=맨체스터 시티
   @Get('tactics')
   async getTactics(@Query('team') team: string) {
-    if (!team) {
-      throw new BadRequestException('분석할 팀 이름(team 파라미터)이 필요합니다.');
+    // 유효성 검사: 파라미터 누락 및 공백만 있는 요청 차단
+    if (!team || team.trim() === '') {
+      throw new BadRequestException('분석할 팀 이름을 입력해 주세요.');
     }
     
-    return this.aiService.getTacticalBriefing(team);
+    return this.aiService.getTacticalBriefing(team.trim());
   }
 }

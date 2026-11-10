@@ -1,4 +1,3 @@
-// src/components/ContinentalCupCard.tsx
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { continentalCups } from '../data/nationalData';
@@ -59,7 +58,6 @@ export default function ContinentalCupCard() {
 
       {isModalOpen && createPortal(
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[9999] flex items-center justify-center p-4" onClick={() => setIsModalOpen(false)}>
-          {/* 💡 max-w-2xl에서 max-w-3xl로 모달창 가로 크기를 넓게 확장 */}
           <div className="bg-white text-gray-900 w-full max-w-3xl rounded-[32px] p-8 shadow-2xl max-h-[85vh] flex flex-col relative" onClick={e => e.stopPropagation()}>
             
             <div className="flex justify-between items-center mb-6">
@@ -87,7 +85,6 @@ export default function ContinentalCupCard() {
               <div className="flex text-xs font-bold text-gray-400 px-6 py-3 border-b border-gray-50">
                 <div className="w-20">Year</div>
                 <div className="flex-1">Host</div>
-                {/* 💡 Winner 칸의 할당 영역을 늘림 (w-32 -> w-48) */}
                 <div className="w-48 text-right">Winner</div>
               </div>
               
@@ -100,7 +97,6 @@ export default function ContinentalCupCard() {
                     <div className="flex-1 font-bold text-gray-500 text-sm">
                       {item.host}
                     </div>
-                    {/* 💡 w-32 -> w-48로 넓히고, 텍스트가 줄바꿈되지 않도록 whitespace-nowrap 추가 */}
                     <div className="w-48 flex items-center justify-end gap-3">
                       <span className="font-black text-gray-800 text-base whitespace-nowrap">{item.winner}</span>
                       <div className="w-6 h-4 overflow-hidden rounded-[2px] shadow-sm border border-gray-200 flex-shrink-0">

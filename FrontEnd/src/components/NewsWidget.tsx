@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 
-// 백엔드에서 받아올 데이터의 타입(인터페이스) 정의
 interface NewsItem {
   id: number;
   tag: string;
@@ -10,7 +9,7 @@ interface NewsItem {
   source: string;
   time: string;
   imageUrl: string;
-  url: string; // 💡 원문 링크 추가
+  url: string;
 }
 
 export default function NewsWidget() {
@@ -55,7 +54,6 @@ export default function NewsWidget() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5 flex-1">
           {newsData.map((news) => (
-            // 💡 div를 a 태그로 변경하여 클릭 시 새 탭에서 실제 기사 원문으로 이동하게 만듭니다.
             <a
               href={news.url}
               target="_blank"

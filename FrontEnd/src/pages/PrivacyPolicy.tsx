@@ -5,7 +5,6 @@ export default function PrivacyPolicy() {
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 fade-in">
       <div className="max-w-4xl mx-auto bg-white rounded-[32px] shadow-sm border border-gray-100 overflow-hidden">
         
-        {/* 헤더 영역 */}
         <div className="bg-[#141b26] p-10 text-center shrink-0 relative">
           <Link to="/" className="absolute top-8 left-8 text-gray-400 hover:text-white transition-colors flex items-center gap-2 font-bold">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
@@ -17,7 +16,6 @@ export default function PrivacyPolicy() {
           <p className="text-gray-400 mt-4 font-medium text-lg">Goalytics는 이용자의 소중한 개인정보를 안전하게 보호합니다.</p>
         </div>
 
-        {/* 본문 영역 */}
         <div className="p-10 space-y-8 text-gray-700">
           
           <div className="text-base text-gray-500 mb-8 font-medium leading-relaxed bg-gray-50 p-6 rounded-2xl">
