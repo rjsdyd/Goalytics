@@ -1,4 +1,4 @@
-# ⚽ Goalytics
+<img width="1901" height="908" alt="image" src="https://github.com/user-attachments/assets/608f52a0-099e-4c6f-a9b5-740818e17d2f" /># ⚽ Goalytics
 
 실시간 축구 경기 데이터와 다개년(2021~2025) 리그 순위 히스토리, 그리고 **Gemini AI 기반 전술 분석 및 가상 매치업 시뮬레이터**를 제공하는 풀스택 축구 대시보드 플랫폼입니다. 현재 활발하게 개발 및 고도화가 진행 중인 프로젝트입니다.
 
@@ -362,3 +362,208 @@ Goalytics는 단순한 축구 데이터 조회를 넘어, Google Gemini API (3.5
     *   **Top Scorer 하이라이트:** 브랜드 컬러(Neon Green)를 포인트로 활용하여 시선을 끄는 카드 UI로 주요 선수의 누적 스탯 정보를 제공합니다.
 *   **인증 기반 헤더 (Auth Header):** 
     JWT 토큰 페이로드를 기반으로 로그인된 유저의 식별 정보(닉네임)를 동적으로 렌더링하고("일반님 환영합니다!"), 즉각적인 상태 초기화(로그아웃) 기능을 지원합니다.
+
+#### 1-1. History (미니 순위표)
+<img width="1902" height="908" alt="image" src="https://github.com/user-attachments/assets/f3916fd3-2b7d-46bf-8202-845129777c9e" />
+
+*   **기능 개요:** 상위 6개 팀의 약어, 승점, 최근 전적 흐름(디자인 인디케이터)을 요약하여 한눈에 보여주는 미니 랭킹 보드입니다.
+*   **API 연동 구조:** `API-Football`의 엔드포인트와 연동하여 실시간 축구 데이터를 수급합니다.
+    *   API로부터 반환받은 구조화된 `JSON` 배열 데이터(팀명, 승점, 전적 배열 등)를 React의 `.map()` 함수를 활용하여 테이블의 각 행(Row)으로 반복하여 동적 렌더링하도록 구현했습니다.
+
+#### 1-2. Overall Top Scorer
+<img width="1901" height="907" alt="image" src="https://github.com/user-attachments/assets/01f785a4-f3a9-4425-968f-46f8617d38d7" />
+
+*   **Top Scorer 하이라이트:** 서비스의 브랜드 컬러(Neon Green)를 포인트 요소로 활용하여 유저의 시선을 끄는 카드 형태의 UI를 적용했으며, 주요 선수의 누적 스탯 정보를 직관적으로 제공합니다.
+
+#### 1-3. Latest News & Transfers
+<img width="804" height="380" alt="image" src="https://github.com/user-attachments/assets/124ea852-a344-4937-8638-d8c9edd48674" />
+
+*   **API 쿼리 파라미터(Query Parameter) 제어:** 검색 키워드 파라미터(`?query=`)에 '축구', '해외축구', '이적시장' 등의 고정 키워드를 조합(AND/OR 조건)하여 서버에 최적화된 뉴스 데이터를 요청합니다.
+*   **노이즈 데이터 필터링 (Data Filtering):** 정치, 경제 등 불필요한 카테고리의 기사가 섞여 들어오는 것을 사전에 방지하고, 글로벌 축구계 및 K리그의 실시간 소식만 정확하게 필터링되어 렌더링되도록 구현했습니다.
+
+#### 1-4. Select Dashboard Mode
+<img width="391" height="377" alt="image" src="https://github.com/user-attachments/assets/c997e1f6-2bf6-43d9-a593-2a9de5e559e9" />
+
+*   **다이나믹 테마 전환:** 4가지 카테고리 테마를 선택하여 대시보드 전체의 데이터 뷰를 즉각적으로 변경할 수 있도록 상태(State)를 제어합니다.
+*   **외부 API 기반 에셋 렌더링:** 챔피언스리그(UCL) 및 유로파리그(UEL)의 공식 로고 등은 `API-Football` API를 연동하여 정확한 리소스를 동적으로 불러와 구현했습니다.
+
+#### 1-5. Leages
+<img width="1024" height="487" alt="image" src="https://github.com/user-attachments/assets/9718a0f5-cc43-423b-b075-2ae76155ecce" />
+<img width="1024" height="489" alt="image" src="https://github.com/user-attachments/assets/17feb46a-a17b-4394-a9dd-fdd28e0af408" />
+<img width="512" height="244" alt="image" src="https://github.com/user-attachments/assets/3b879c08-74af-4272-a33c-a3857d3b3cac" />
+<img width="512" height="246" alt="image" src="https://github.com/user-attachments/assets/d5c029aa-2c9c-43dd-b9af-021961cce787" />
+<img width="512" height="245" alt="image" src="https://github.com/user-attachments/assets/59144f41-584b-4896-bf01-685d4a656c12" />
+
+*   (API-Football) API를 사용하여 각 리그의 로고와 팀들의 로고를 버튼으로 구현
+
+#### 1-6. Leagues Team 상세 페이지
+<img width="446" height="773" alt="image" src="https://github.com/user-attachments/assets/0e3563dd-1b78-4415-8cd1-ab8ab515b4b8" />
+<img width="430" height="701" alt="image" src="https://github.com/user-attachments/assets/84dc7a56-b7d4-439d-b563-00bf7c6cb864" />
+
+*   **팀 기본 정보 (창단 연도, 홈 구장, 감독):** `API-Football` API를 호출하여 최신 데이터를 동적으로 연동합니다.
+*   **팀 설명 및 역대 주요 순위 (득점/도움):** 업데이트 빈도가 낮은 콜드 데이터(Cold Data)의 특성을 고려하여, 하드코딩 방식으로 고속 렌더링되도록 최적화했습니다.
+
+**🤖 Goalytics AI 전술 리포트 아키텍처**
+
+*   **Step 1: 프롬프트 엔지니어링 (Prompt Engineering)**
+    *   프론트엔드에서 팀 이름(예: 파리 생제르맹 FC)을 백엔드로 넘기면, NestJS 서버에서 사전 설계된 시스템 프롬프트(System Prompt)에 팀명을 주입합니다.
+    *   **설계 포인트:** AI가 매번 일관된 형식으로 답변하도록 *"반드시 1. 전술적 구조, 2. 팀의 핵심 강점, 3. 상대팀 입장의 약점 및 공략법 3가지 섹션으로 나누어 JSON 형태로 반환하라"*고 프롬프트를 엄격하게 제어(Structured Output)합니다.
+*   **Step 2: DB 캐싱을 통한 API 최적화 (Caching Strategy)**
+    *   **Cache Hit:** 백엔드는 외부 AI API를 무조건 호출하지 않고, 먼저 자체 DB에 해당 클럽의 분석 데이터가 존재하는지 조회합니다. 저장된 데이터가 있다면 API 호출 없이 DB 데이터를 즉각 반환하여 로딩 시간을 대폭 단축합니다.
+    *   **Cache Miss:** DB에 데이터가 없는 최초 요청의 경우에만 외부 AI API를 호출하여 결과를 받아오고, 향후 동일한 요청에 대비해 그 결과를 DB에 새롭게 적재(Insert)하여 API 호출 비용을 절감합니다.
+*   **Step 3: 응답 데이터 파싱 및 컴포넌트 매핑 (Parsing & Mapping)**
+    *   백엔드로부터 전달받은 구조화된 데이터를 React 상태(State)에 저장합니다.
+    *   통짜 텍스트 렌더링을 지양하고, 데이터의 Key 값에 따라 커스텀 UI 컴포넌트(예: 좌측 네온 그린 바(Bar) 헤더, 체크마크 아이콘 리스트 박스)에 매핑하여 가독성을 높였습니다.
+*   **Step 4: 핵심 키워드 하이라이팅 적용 (Keyword Highlighting)**
+    *   사용자의 시선을 유도하기 위해 리포트 내의 핵심 전술 용어나 포인트(예: '하키미가 비운 측면 배후 공간')를 정규표현식(Regex)으로 파싱하거나 AI의 태그 마크업을 활용하여, 브랜드 컬러를 배경으로 한 하이라이트 UI 컴포넌트로 동적 치환했습니다.
+ 
+### 2. 챔피언스 리그 대시보드
+<img width="1899" height="908" alt="image" src="https://github.com/user-attachments/assets/d1f74623-8ecd-45eb-8e31-9d4aa76cb3dd" />
+<img width="1901" height="907" alt="image" src="https://github.com/user-attachments/assets/7e02a186-1f78-43de-a3e7-4674d5fcdf59" />
+<img width="1898" height="905" alt="image" src="https://github.com/user-attachments/assets/f310f3e5-d1cb-453c-aae5-25b255072606" />
+<img width="1901" height="908" alt="image" src="https://github.com/user-attachments/assets/3b7b6325-1a02-426f-98dd-0fe8d9ad47ef" />
+
+*   챔피언스 리그 브랜드 컬러에 맞게끔 챔스 브랜드 컬러를 적용
+
+### 3. 유로파 리그 대시보드
+<img width="1899" height="907" alt="image" src="https://github.com/user-attachments/assets/953090ad-148b-4e3b-83d6-e554d0e30e06" />
+<img width="1901" height="907" alt="image" src="https://github.com/user-attachments/assets/1e7d7170-2c5f-4a4e-a0e8-9e24e3d25a75" />
+<img width="1903" height="905" alt="image" src="https://github.com/user-attachments/assets/a271d85a-cf26-4cc2-b43f-4c52e25a89f2" />
+
+*   유로파 리그 브랜드 컬러에 맞게끔 유로파 브랜드 컬러를 적용
+
+### 4. 국가대표 대시보드
+<img width="1903" height="906" alt="image" src="https://github.com/user-attachments/assets/b750c97f-25b2-4e3a-9fee-29eed1472262" />
+<img width="1901" height="910" alt="image" src="https://github.com/user-attachments/assets/f9c7a313-7e0b-487e-99a9-efaed2ff3c79" />
+<img width="1900" height="907" alt="image" src="https://github.com/user-attachments/assets/d6f124c1-f368-4f88-aca9-6b39da038dda" />
+<img width="1902" height="908" alt="image" src="https://github.com/user-attachments/assets/edf2dfd1-3890-4e8c-b061-6580d6c4dc03" />
+
+#### 4-1. 국가 (Nations)
+<img width="1024" height="489" alt="image" src="https://github.com/user-attachments/assets/9e2cca21-2efe-4316-8f23-a2fd787cd344" />
+<img width="1024" height="489" alt="image" src="https://github.com/user-attachments/assets/be13bc2b-5f7b-4a31-9436-48c03890328d" />
+<img width="512" height="246" alt="image" src="https://github.com/user-attachments/assets/813d6688-f400-47a9-88a2-4e892a908dec" />
+<img width="512" height="245" alt="image" src="https://github.com/user-attachments/assets/afd7a561-2c50-47c1-94c4-5ea95845d8d8" />
+<img width="512" height="244" alt="image" src="https://github.com/user-attachments/assets/c78c8ed3-ba8c-40e6-8795-51f3707109cb" />
+
+*   **Flag CDN 도입:** 
+    *   국가대표 국기 로고를 렌더링할 때, 수많은 이미지 파일을 자체 서버(DB나 AWS S3 등)에 직접 저장하고 서빙하는 대신 별도의 인증(API Key)이 필요 없는 **완전 개방형 퍼블릭 CDN(Flag CDN)**을 적극 활용했습니다.
+ 
+#### 4-2. 국가 상세 페이지 (Nation Detail Page)
+<img width="415" height="790" alt="image" src="https://github.com/user-attachments/assets/40919b05-502e-40d7-9ebe-7d5f34e7c46d" />
+<img width="431" height="556" alt="image" src="https://github.com/user-attachments/assets/7e87a6d0-c04f-47dc-8d45-64f162afd944" />
+
+*   **국가 기본 정보 (창단 연도, 홈 구장, 감독):** `API-Football` API를 호출하여 최신 데이터를 동적으로 연동합니다.
+*   **팀 설명 및 역대 주요 순위 (득점/도움):** 업데이트 빈도가 낮은 콜드 데이터(Cold Data)의 특성을 고려하여, 하드코딩 방식으로 고속 렌더링되도록 최적화했습니다.
+
+**🤖 Goalytics AI 전술 리포트 아키텍처**
+
+*   **Step 1: 프롬프트 엔지니어링 (Prompt Engineering)**
+    *   프론트엔드에서 국가대표팀 이름(예: 프랑스, 아르헨티나 등)을 백엔드로 넘기면, NestJS 서버에서 사전 설계된 시스템 프롬프트(System Prompt)에 팀명을 주입합니다.
+    *   **설계 포인트:** AI가 매번 일관된 형식으로 답변하도록 *"반드시 1. 전술적 구조, 2. 팀의 핵심 강점, 3. 상대팀 입장의 약점 및 공략법 3가지 섹션으로 나누어 JSON 형태로 반환하라"*고 프롬프트를 엄격하게 제어(Structured Output)합니다.
+*   **Step 2: DB 캐싱을 통한 API 최적화 (Caching Strategy)**
+    *   **Cache Hit:** 백엔드는 외부 AI API를 무작정 호출하지 않고, 먼저 자체 DB에 해당 국가의 분석 데이터가 존재하는지 조회합니다. 이미 저장된 데이터가 있다면 API 호출 없이 DB 데이터를 즉각 반환하여 로딩을 생략합니다.
+    *   **Cache Miss:** DB에 데이터가 없는 최초 요청의 경우에만 외부 AI API를 호출하여 결과를 받아오고, 향후 동일한 요청에 대비해 그 결과를 DB에 새롭게 적재(Insert)합니다.
+*   **Step 3: 응답 데이터 파싱 및 컴포넌트 매핑 (Parsing & Mapping)**
+    *   백엔드로부터 전달받은 구조화된 데이터를 React 상태(State)에 저장합니다.
+    *   화면에 렌더링할 때 통짜 텍스트를 그대로 박지 않고, 데이터의 Key 값에 따라 커스텀 UI 컴포넌트(예: 좌측 네온 그린 바(Bar)가 들어간 헤더, 체크마크 아이콘이 포함된 리스트 박스)에 매핑하여 렌더링합니다.
+*   **Step 4: 핵심 키워드 하이라이팅 적용 (Keyword Highlighting)**
+    *   사용자의 시선을 유도하기 위해 리포트 내의 핵심 전술 용어나 포인트를 정규표현식(Regex)으로 파싱하거나 AI의 태그 마크업을 활용하여 브랜드 컬러를 배경으로 한 하이라이트 UI 컴포넌트로 치환 처리했습니다.
+ 
+### 5. 로그인/회원가입 화면
+<img width="1024" height="488" alt="image" src="https://github.com/user-attachments/assets/6288b2aa-a30e-43fb-ba04-a6dc3ca2f739" />
+<img width="1024" height="489" alt="image" src="https://github.com/user-attachments/assets/e981cc88-2132-48e8-a49b-f9350c83a449" />
+
+#### 1. 개요
+보안성과 서버 확장성을 고려하여 기존의 세션(Session) 기반 인증 대신, JWT(JSON Web Token) 기반의 무상태(Stateless) 인증 아키텍처를 전면 도입하여 회원가입 및 로그인 프로세스를 구현했습니다.
+
+#### 2. 기술적 작동 원리 (JWT Auth Flow)
+
+*   **회원가입 및 단방향 암호화 (Security):** 
+    사용자의 비밀번호는 DB에 평문으로 저장하지 않고, 암호화 알고리즘(예: bcrypt)을 통해 해싱 처리하여 데이터베이스 유출 시에도 안전하도록 보안을 강화했습니다.
+*   **JWT 발급 로직 (Backend - NestJS):**
+    *   사용자가 로그인에 성공하면, NestJS의 `JwtModule`을 활용하여 사용자 식별자(ID)가 담긴 Payload를 서버의 Secret Key로 서명하여 Access Token을 발급합니다.
+    *   서버 메모리에 로그인 상태를 따로 기록하지 않아(Stateless), 접속자가 늘어나도 서버 리소스를 낭비하지 않습니다.
+*   **프론트엔드 토큰 관리 (Frontend - React):**
+    *   발급받은 토큰은 브라우저의 `localStorage`에 안전하게 보관합니다.
+    *   사용자가 로그인이 필요한 기능(예: 나만의 티어 저장, 마이페이지 조회 등)을 요청할 때마다, Axios 통신 시 HTTP Header에 `Authorization: Bearer {token}` 형태로 토큰을 동봉하여 서버로 전송합니다.
+*   **Custom Guard를 통한 엔드포인트 보호 (API Authorization):**
+    *   백엔드에 커스텀 `JwtAuthGuard`를 직접 구현하여 라우터를 보호했습니다.
+    *   프론트엔드에서 넘어온 토큰의 위변조 및 만료 여부를 검증하고, 유효하지 않은 토큰(혹은 비로그인 유저)의 접근은 컨트롤러 레이어에 도달하기 전에 즉각적으로 401(Unauthorized) 에러를 반환해 서버를 방어합니다.
+ 
+### 6. 마이페이지 (My Page) - 문의하기 위젯
+<img width="1900" height="910" alt="image" src="https://github.com/user-attachments/assets/85ee5be6-383a-4c1f-97d3-55286273091d" />
+<img width="1024" height="490" alt="image" src="https://github.com/user-attachments/assets/14d5e911-0576-4ea8-af8c-c8dc9966dd28" />
+<img width="1024" height="486" alt="image" src="https://github.com/user-attachments/assets/32a640b2-f977-4053-b4f4-4b96c19030c9" />
+
+**1. 화면 개요**
+사용자가 서비스 이용 중 누락된 팀이나 국가의 추가를 요청하거나, 새로운 기능을 제안할 수 있는 '문의하기' 팝업 위젯입니다. 별도의 페이지 이동 없이 현재 화면 위에서 즉각적으로 피드백을 남길 수 있도록 모달(Modal) 형태로 구현했습니다.
+
+**2. 주요 기능 (Features)**
+
+*   **문의 유형 카테고리화 (Select Dropdown):** 단순히 텍스트만 받는 것이 아니라, '팀 추가 요청', '국가 추가 요청', '기능 추가 요청', '기타 문의' 등으로 문의 유형을 규격화했습니다. 이는 향후 관리자(Admin)가 유저들의 피드백 데이터를 목적에 맞게 쉽게 필터링하고 효율적으로 대응할 수 있도록 돕습니다.
+*   **직관적인 폼 입력 및 유효성 검사:** 상세 내용을 입력할 수 있는 텍스트 에어리어(Textarea)를 제공하며, 내용이 비어있을 경우 제출을 막는 프론트엔드 유효성 검사(Validation)를 적용했습니다.
+
+**3. 기술적 작동 원리 (Tech & Logic)**
+
+*   **프론트엔드 상태 제어 (React Controlled Components):** `useState` 훅을 활용하여 드롭다운의 선택값(Category)과 텍스트 입력값(Content)을 실시간 상태(State)로 동기화하여 관리합니다.
+*   **인증 기반 API 통신 (JWT & Axios):** '문의 접수하기' 버튼 클릭 시, 프론트엔드에 저장된 JWT Access Token을 HTTP 헤더에 담아 백엔드(NestJS)의 `POST /inquiries` API로 전송합니다.
+*   **백엔드 토큰 해독 및 DB 적재:** 백엔드에서는 `JwtAuthGuard`를 통해 토큰을 해독하고 "어떤 유저(User ID)가 남긴 문의인지"를 식별하여 DB(데이터베이스)에 안전하게 적재합니다.
+
+#### 6-1. 나만의 티어리스트 작성
+<img width="462" height="791" alt="image" src="https://github.com/user-attachments/assets/d3cbedb5-3309-4eac-a4d7-71b6f0d3c61a" />
+<img width="476" height="885" alt="image" src="https://github.com/user-attachments/assets/3019c172-f1b5-4df8-9711-44f0bef55256" />
+
+**1. 화면 개요**
+유저가 직접 유럽 축구 클럽들을 S등급부터 D등급까지 평가하고 분류할 수 있는 인터랙티브 위젯입니다. 하단의 '대기 팀' 풀에서 상단의 티어 보드로 로고를 자유롭게 배치하며 자신만의 축구 철학을 시각화할 수 있습니다.
+
+**2. 주요 기능 및 UI/UX (Features & UX)**
+
+*   **순수 HTML5 Drag & Drop 구현:** 무거운 외부 라이브러리(dnd-kit 등)에 의존하지 않고, 웹 표준 `Drag & Drop API`를 활용하여 가볍고 최적화된 드래그 액션을 직접 구현했습니다.
+*   **UX 개선 (자동 스크롤 보정):** 팀 로고를 드래그한 상태로 화면 최상단(S티어)으로 이동할 때, 마우스 위치를 계산하여 브라우저 화면이 부드럽게 자동 스크롤되도록 `onDrag` 이벤트를 커스텀하여 사용자 불편을 해소했습니다.
+*   **직관적인 상태 분류:** 배치가 완료된 팀과 아직 배치되지 않은 '대기 팀'의 상태(State)를 분리하여, 사용자가 남은 팀을 한눈에 파악할 수 있도록 렌더링합니다.
+
+**3. 핵심 기술: 데이터 영속성 보장 (Data Persistence)**
+
+*   **DB 연동 및 덮어쓰기 로직:** 우측 상단의 '저장하기' 버튼을 클릭하면, 프론트엔드의 현재 티어 상태(S~D 배치 현황)가 JSON 형태로 가공되어 백엔드(NestJS) API로 전송됩니다. 백엔드에서는 해당 유저의 기존 데이터 유무를 파악해 Insert 또는 Update(덮어쓰기) 처리를 수행하여 DB에 안전하게 적재합니다.
+*   **상태 유지 (Stateless Auth & DB Mapping):** 클라이언트(브라우저)에만 휘발성으로 남는 데이터가 아닙니다. JWT 토큰을 기반으로 유저를 식별하여 DB에 저장하므로, 유저가 사이트를 종료하거나 로그아웃한 뒤 다른 기기에서 재로그인하더라도 이전에 저장해둔 티어 리스트가 완벽하게 복구되어 렌더링됩니다. 사용자 경험(UX)의 단절을 막고 데이터의 영속성(Persistence)을 보장하는 아키텍처입니다.
+
+### 7. 가상 매치업 시뮬레이터 (Virtual Matchup Simulator)
+<img width="1899" height="909" alt="image" src="https://github.com/user-attachments/assets/4ed789f3-225d-47ee-8081-34242d23acc8" />
+<img width="1901" height="908" alt="image" src="https://github.com/user-attachments/assets/d95dbe0c-d47e-457c-bd75-63b2d11c9712" />
+<img width="300" height="238" alt="image" src="https://github.com/user-attachments/assets/87377452-4a6c-495a-9a14-64b208f0cba2" />
+<img width="226" height="738" alt="image" src="https://github.com/user-attachments/assets/98d6f055-a31f-4a0a-8e0a-39d0892aff98" />
+
+**1. 화면 개요**
+사용자가 '클럽' 또는 '국가대표' 카테고리를 선택한 뒤, 대결을 펼칠 두 팀(Team A vs Team B)을 고르면 대형 언어 모델(LLM)이 양 팀의 전술적 상성, 예상 스코어, 핵심 플레이어 맞대결 등을 시뮬레이션하여 리포트 형태로 제공하는 인터랙티브 위젯입니다.
+
+**2. 주요 기능 및 UI/UX (Features & UX)**
+
+*   **단계별 모달 인터페이스 (Multi-step Modal UI):** 메인 화면을 벗어나지 않는 모달(Modal) 창 위에서 '카테고리 선택(클럽/국대) ➔ 팀 A 선택 ➔ 팀 B 선택 ➔ 결과 확인'으로 이어지는 매끄러운 플로우를 구현했습니다.
+*   **직관적인 팀 선택 그리드:** 사용자가 직관적으로 팀을 고를 수 있도록 자체 구축한 팀 마스터 데이터를 활용하여 로고와 팀명을 깔끔한 그리드 형태로 렌더링했습니다.
+*   **동적 버튼 및 로딩 상태 처리:** 두 팀이 모두 선택되기 전에는 '시뮬레이션 시작' 버튼을 비활성화(Disabled) 처리하여 오류를 방지하고, API 통신 중에는 '로딩 중...' 상태로 전환하여 사용자의 이탈을 막는 방어적 UX를 적용했습니다.
+
+**3. 기술적 작동 원리 (Tech & Logic)**
+
+*   **프론트엔드 상태 관리의 집약 (React State):**
+    *   `category` (클럽/국가대표), `teamA`, `teamB`, `isLoading`, `reportData` 등 여러 개의 상태(State)를 유기적으로 관리합니다.
+    *   카테고리 탭('클럽 매치업', '국가대표 매치업')을 전환할 때마다 선택된 팀 데이터를 초기화하고 렌더링할 팀 목록을 변경하는 등 꼼꼼한 예외 처리가 들어갔습니다.
+*   **동적 프롬프트 엔지니어링 (Dynamic Prompting):**
+    *   사용자가 선택한 두 팀의 이름(예: Manchester City vs Manchester United)을 백엔드(NestJS)로 전송하면, 서버는 이를 기반으로 "A팀과 B팀이 맞붙을 경우의 전술적 상성과 결과를 분석해달라"는 동적 시스템 프롬프트를 생성하여 LLM에 질의합니다.
+*   **구조화된 AI 리포트 렌더링:**
+    *   전술 리포트와 마찬가지로, AI의 응답을 통짜 텍스트가 아닌 JSON 포맷으로 강제(Structured Output)한 뒤 프론트엔드에서 섹션별 컴포넌트로 예쁘게 매핑하여 가독성 높은 결과 창을 띄웁니다.
+
+### 8. 개인정보처리방침 / 이용약관 (Privacy Policy & Terms of Service)
+<img width="299" height="647" alt="image" src="https://github.com/user-attachments/assets/0af780b6-d498-4718-a037-aab47dbadd24" />
+<img width="307" height="550" alt="image" src="https://github.com/user-attachments/assets/0caa9efc-cde1-49cc-bc67-0e23c274c7d9" />
+
+**1. 화면 개요**
+Goalytics가 실제 유저에게 서비스된다는 가정 하에, 프로덕트의 신뢰도와 완성도를 높이기 위해 구축한 웹 규정 페이지입니다. 단순히 텍스트만 채워 넣은 것이 아니라, 실제 법적 가이드라인과 프로젝트의 성격에 맞게 내용을 직접 기획하고 구조화했습니다.
+
+**2. 세부 구현 및 작성 기준**
+
+*   **개인정보처리방침 (Privacy Policy): 컴플라이언스(Compliance) 준수**
+    *   국내 '개인정보보호법' 가이드라인 및 필수 고지 기준을 철저히 준수하여 작성했습니다.
+    *   사용자의 회원가입 시 수집되는 개인정보 항목(이메일, 닉네임, 비밀번호 등), 처리 목적, 보유 및 파기 절차, 제3자 제공 여부 등을 명확하게 카테고리화하여 명시했습니다. 이는 사용자 데이터를 안전하고 투명하게 관리하려는 개발자의 책임감을 보여줍니다.
+*   **이용약관 (Terms of Service): 프로젝트 정체성 명시**
+    *   제1조(서비스의 목적 및 성격)에 해당 웹사이트가 상업적 목적이 아닌 '개발자의 기술적 역량을 보여주기 위한 개인 포트폴리오용' 프로젝트임을 최상단에 명시했습니다.
+    *   서비스 내에서 활용된 외부 API(Gemini, API-Football 등)의 출처를 투명하게 밝히고, 저작권 및 면책 조항을 꼼꼼히 기재하여 혹시 모를 운영상의 오해나 법적 이슈를 사전에 방지하도록 설계했습니다.
