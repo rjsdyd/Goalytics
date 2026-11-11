@@ -49,3 +49,69 @@
 ### 5. 엔터프라이즈급 보안 및 예외 처리
 *   `@nestjs/config`를 활용해 DB 접속 정보 및 외부 API Key를 소스 코드에서 완전히 분리하고 `.env` 기반 안전한 환경변수 주입 적용.
 *   글로벌 AI 서버 과부하(503, 429 에러) 발생 시 서버 다운을 방지하기 위한 Try-Catch 예외 처리 및 사용자 친화적 에러 메시지 반환 로직 구축.
+
+## FrontEnd 디렉토리
+```
+FrontEnd/
+├── node_modules/
+├── public/
+│   ├── favicon.svg
+│   ├── football.svg
+│   └── icons.svg
+├── src/
+│   ├── api/
+│   │   └── axios.ts
+│   ├── assets/
+│   │   ├── hero.png
+│   │   ├── react.svg
+│   │   └── vite.svg
+│   ├── components/
+│   │   ├── ContinentalCupCard.tsx
+│   │   ├── FifaRankingCard.tsx
+│   │   ├── Header.tsx
+│   │   ├── History.tsx
+│   │   ├── LiveMatch.tsx
+│   │   ├── MatchupModal.tsx
+│   │   ├── MiniStats.tsx
+│   │   ├── ModeSelector.tsx
+│   │   ├── Mypage.tsx
+│   │   ├── NationalContent.tsx
+│   │   ├── NewsWidget.tsx
+│   │   ├── UCLContent.tsx
+│   │   ├── UELContent.tsx
+│   │   └── WorldCupCard.tsx
+│   ├── data/
+│   │   ├── leagueStatsData.ts
+│   │   ├── nationalData.ts
+│   │   ├── nationsData.ts
+│   │   ├── uclData.ts
+│   │   └── uelData.ts
+│   ├── pages/
+│   │   ├── AdminPage.tsx
+│   │   ├── AuthPage.tsx
+│   │   ├── LeaguesPage.tsx
+│   │   ├── NationDetail.tsx
+│   │   ├── Nations.tsx
+│   │   ├── PrivacyPolicy.tsx
+│   │   ├── TermsOfService.tsx
+│   │   └── TierMaker.tsx
+│   ├── store/
+│   │   └── authStore.ts
+│   ├── App.css
+│   ├── App.tsx
+│   ├── index.css
+│   └── main.tsx
+├── .gitignore
+├── eslint.config.js
+├── index.html
+├── package-lock.json
+├── package.json
+├── postcss.config.js
+├── README.md
+├── tailwind.config.js
+├── tsconfig.app.json
+├── tsconfig.json
+├── tsconfig.node.json
+├── vite.config.ts
+└── README.md
+```
