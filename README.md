@@ -1,4 +1,4 @@
-<img width="1901" height="908" alt="image" src="https://github.com/user-attachments/assets/608f52a0-099e-4c6f-a9b5-740818e17d2f" /># ⚽ Goalytics
+# ⚽ Goalytics
 
 실시간 축구 경기 데이터와 다개년(2021~2025) 리그 순위 히스토리, 그리고 **Gemini AI 기반 전술 분석 및 가상 매치업 시뮬레이터**를 제공하는 풀스택 축구 대시보드 플랫폼입니다. 현재 활발하게 개발 및 고도화가 진행 중인 프로젝트입니다.
 
