@@ -208,8 +208,8 @@ Backend/
 ```
 ## ERD
 <img width="1156" height="1472" alt="image" src="https://github.com/user-attachments/assets/3b293943-9d4e-4212-9800-1cad7a52e233" />
-### 1. 설계 개요
 
+### 1. 설계 개요
 Goalytics의 백엔드(NestJS + TypeORM)를 지탱하는 관계형 데이터베이스(RDBMS) 모델링입니다. 서비스의 확장성을 고려하여 도메인별로 테이블을 분리하고, 외부 API 호출 비용을 줄이기 위한 데이터 캐싱(Caching)과 유연한 JSON 타입 컬럼 활용에 중점을 두어 설계했습니다.[cite: 13]
 
 ### 2. 핵심 도메인별 설계 의도
