@@ -496,6 +496,7 @@ Goalytics는 단순한 축구 데이터 조회를 넘어, Google Gemini API (3.5
 <img width="1024" height="486" alt="image" src="https://github.com/user-attachments/assets/32a640b2-f977-4053-b4f4-4b96c19030c9" />
 
 **1. 화면 개요**
+
 사용자가 서비스 이용 중 누락된 팀이나 국가의 추가를 요청하거나, 새로운 기능을 제안할 수 있는 '문의하기' 팝업 위젯입니다. 별도의 페이지 이동 없이 현재 화면 위에서 즉각적으로 피드백을 남길 수 있도록 모달(Modal) 형태로 구현했습니다.
 
 **2. 주요 기능 (Features)**
@@ -514,6 +515,7 @@ Goalytics는 단순한 축구 데이터 조회를 넘어, Google Gemini API (3.5
 <img width="476" height="885" alt="image" src="https://github.com/user-attachments/assets/3019c172-f1b5-4df8-9711-44f0bef55256" />
 
 **1. 화면 개요**
+
 유저가 직접 유럽 축구 클럽들을 S등급부터 D등급까지 평가하고 분류할 수 있는 인터랙티브 위젯입니다. 하단의 '대기 팀' 풀에서 상단의 티어 보드로 로고를 자유롭게 배치하며 자신만의 축구 철학을 시각화할 수 있습니다.
 
 **2. 주요 기능 및 UI/UX (Features & UX)**
@@ -534,6 +536,7 @@ Goalytics는 단순한 축구 데이터 조회를 넘어, Google Gemini API (3.5
 <img width="226" height="738" alt="image" src="https://github.com/user-attachments/assets/98d6f055-a31f-4a0a-8e0a-39d0892aff98" />
 
 **1. 화면 개요**
+
 사용자가 '클럽' 또는 '국가대표' 카테고리를 선택한 뒤, 대결을 펼칠 두 팀(Team A vs Team B)을 고르면 대형 언어 모델(LLM)이 양 팀의 전술적 상성, 예상 스코어, 핵심 플레이어 맞대결 등을 시뮬레이션하여 리포트 형태로 제공하는 인터랙티브 위젯입니다.
 
 **2. 주요 기능 및 UI/UX (Features & UX)**
@@ -557,6 +560,7 @@ Goalytics는 단순한 축구 데이터 조회를 넘어, Google Gemini API (3.5
 <img width="307" height="550" alt="image" src="https://github.com/user-attachments/assets/0caa9efc-cde1-49cc-bc67-0e23c274c7d9" />
 
 **1. 화면 개요**
+
 Goalytics가 실제 유저에게 서비스된다는 가정 하에, 프로덕트의 신뢰도와 완성도를 높이기 위해 구축한 웹 규정 페이지입니다. 단순히 텍스트만 채워 넣은 것이 아니라, 실제 법적 가이드라인과 프로젝트의 성격에 맞게 내용을 직접 기획하고 구조화했습니다.
 
 **2. 세부 구현 및 작성 기준**
