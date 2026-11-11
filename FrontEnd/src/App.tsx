@@ -18,6 +18,7 @@ import MyPage from './components/Mypage';
 import AdminPage from './pages/AdminPage';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
+import TierMaker from './pages/TierMaker';
 
 export const ModeContext = createContext<any>(null);
 
@@ -112,6 +113,15 @@ function AppLayout() {
             element={
               <ProtectedRoute>
                 <AdminPage />
+              </ProtectedRoute>
+            } 
+          />
+          {/* 💡 나만의 티어 리스트 페이지 라우팅 추가 (로그인 유저 전용) */}
+          <Route 
+            path="/tier-maker" 
+            element={
+              <ProtectedRoute>
+                <TierMaker />
               </ProtectedRoute>
             } 
           />

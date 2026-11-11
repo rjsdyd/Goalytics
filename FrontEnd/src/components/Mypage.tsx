@@ -109,6 +109,7 @@ export default function MyPage() {
   return (
     <div className="max-w-[1200px] mx-auto space-y-8 animate-fadeIn pb-10">
       
+      {/* 1. 프로필 요약 카드 */}
       <div className="bg-white px-10 py-8 rounded-[32px] shadow-sm border border-gray-100 flex flex-col md:flex-row justify-between items-center gap-6">
         <div className="flex flex-wrap items-center gap-10">
           
@@ -159,6 +160,27 @@ export default function MyPage() {
         </div>
       </div>
 
+      {/* 💡 2. 새로 추가된 티어 메이커 배너 섹션 */}
+      <div className="bg-gradient-to-r from-[#141b26] to-gray-800 px-10 py-10 rounded-[32px] shadow-lg flex flex-col md:flex-row justify-between items-center gap-6 relative overflow-hidden">
+        {/* 우측 장식용 배경 이모지 */}
+        <div className="absolute -right-8 -top-12 text-[#41e307] opacity-20 text-9xl pointer-events-none select-none">👑</div>
+        
+        <div className="relative z-10 flex flex-col">
+          <h3 className="text-3xl font-black text-white mb-2 tracking-tight flex items-center gap-3">
+            나만의 축구 티어 리스트 
+          </h3>
+          <p className="text-gray-300 font-medium">클럽 및 국가대표 팀을 S~D 등급으로 직접 평가하고 저장해보세요.</p>
+        </div>
+        
+        <button 
+          onClick={() => navigate('/tier-maker')}
+          className="relative z-10 bg-[#41e307] text-[#141b26] px-8 py-4 rounded-2xl font-black text-lg hover:bg-white transition-all duration-300 shadow-[0_0_15px_rgba(65,227,7,0.3)] hover:shadow-[0_0_20px_rgba(255,255,255,0.5)] hover:-translate-y-1 shrink-0"
+        >
+          티어 메이커 시작하기 ➔
+        </button>
+      </div>
+
+      {/* 3. 즐겨찾기한 팀 */}
       <div className="bg-white p-10 rounded-[32px] shadow-sm border border-gray-100">
         <h3 className="text-2xl font-black text-[#141b26] mb-8 flex items-center gap-3 tracking-tight">
           <span className={`w-2.5 h-8 rounded-full shadow-sm ${teamAccentBg}`}></span>
@@ -192,6 +214,7 @@ export default function MyPage() {
         </div>
       </div>
 
+      {/* 4. 즐겨찾기한 국가 */}
       <div className="bg-white p-10 rounded-[32px] shadow-sm border border-gray-100">
         <h3 className="text-2xl font-black text-[#141b26] mb-8 flex items-center gap-3 tracking-tight">
           <span className={`w-2.5 h-8 rounded-full shadow-sm ${nationAccentBg}`}></span>
@@ -225,6 +248,7 @@ export default function MyPage() {
         </div>
       </div>
 
+      {/* 5. 지원 및 문의 모달 */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-white bg-opacity-80 backdrop-blur-sm">
           <div className="bg-white p-8 rounded-3xl shadow-xl w-full max-w-md border border-gray-200 animate-fadeIn">

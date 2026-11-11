@@ -1609,6 +1609,10 @@ async onModuleInit() {
     return this.leaguesRepository.find();
   }
 
+  async findAllTeams() {
+    return this.teamsRepository.find(); 
+  }
+
   async findByLeague(leagueId: string): Promise<Team[]> {
     return this.teamsRepository.find({
       where: { leagueId },

@@ -1,4 +1,3 @@
-// src/app.module.ts
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ScheduleModule } from '@nestjs/schedule';
@@ -11,6 +10,7 @@ import { InquiriesModule } from './inquiries/inquiries.module.js';
 import { UsersModule } from './users/users.module.js';
 import { AiModule } from './ai/ai.module.js';
 import { MatchupModule } from './matchup/matchup.module.js';
+import { TierModule } from './tier/tier.module.js';
 
 @Module({
   imports: [
@@ -43,6 +43,7 @@ import { MatchupModule } from './matchup/matchup.module.js';
     UsersModule,
     AiModule,
     MatchupModule,
+    TierModule,
   ],
   controllers: [],
   providers: [],
